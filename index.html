@@ -1,0 +1,1667 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Praxismanagement · KIMOJO</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://alcdn.msauth.net/browser/2.38.0/js/msal-browser.min.js"></script>
+<style>
+:root{--red:#C03B35;--red-bg:rgba(192,59,53,.08);--red-hover:#a3302c;--dark:#020101;--bg:#fdfaf8;--card:#fff;--muted:#777;--border:#eaeaea;--teal:#00bfa6;--teal-bg:rgba(0,191,166,.08);--radius:20px;--shadow:0 8px 24px rgba(0,0,0,.03);--blue:#3b82f6;--blue-bg:rgba(59,130,246,.08);--amber:#d97706;--amber-bg:rgba(217,119,6,.08);--ergo:#e07a5f;--ergo-bg:rgba(224,122,95,.08);--purple:#7c3aed;--purple-bg:rgba(124,58,237,.08);--green:#059669;--green-bg:rgba(5,150,105,.08);--fire:#ef4444;--fire-bg:rgba(239,68,68,.08)}
+*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Poppins',sans-serif;background:var(--bg);color:var(--dark);min-height:100vh;line-height:1.6}
+/* Login */
+#lo{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:9999}.lb{text-align:center;width:400px;max-width:92vw}.lb h1{font-family:'Montserrat',sans-serif;font-size:clamp(32px,8vw,42px);font-weight:900;color:var(--red);margin-bottom:4px;letter-spacing:-.03em}.lb p{color:var(--muted);font-size:14px;margin-bottom:32px}.l-btn{width:100%;padding:16px;border:none;border-radius:100px;background:var(--red);color:#fff;font-family:'Montserrat',sans-serif;font-size:15px;font-weight:700;cursor:pointer;transition:all .3s;display:flex;align-items:center;justify-content:center;gap:8px}.l-btn:hover{background:var(--red-hover);transform:translateY(-2px)}.l-err{color:var(--red);font-size:13px;margin-top:12px;font-weight:600;display:none}
+.loading{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9998}.loading.h{display:none}.spinner{width:40px;height:40px;border:3px solid var(--border);border-top-color:var(--red);border-radius:50%;animation:spin .8s linear infinite;margin-bottom:12px}@keyframes spin{to{transform:rotate(360deg)}}.loading p{color:var(--muted);font-size:14px}
+#db{display:none;padding:24px 20px}.mx{max-width:1200px;margin:0 auto}
+.hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px}.hdr h1{font-family:'Montserrat',sans-serif;font-size:24px;font-weight:900;letter-spacing:-.02em}.hdr h1 span{color:var(--red)}.hdr-r{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.hdr-btn{padding:8px 16px;border-radius:100px;border:2px solid var(--border);background:#fff;color:var(--muted);font-size:12px;font-weight:500;cursor:pointer;font-family:'Poppins',sans-serif;transition:all .2s}.hdr-btn:hover{border-color:var(--red);color:var(--red)}
+/* Main tabs */
+.main-tabs{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;border-bottom:2px solid var(--border);padding-bottom:14px}.m-tab{padding:10px 24px;border-radius:100px;border:2px solid var(--border);background:#fff;color:var(--muted);font-family:'Montserrat',sans-serif;font-size:13px;font-weight:800;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:6px}.m-tab:hover{border-color:var(--red);color:var(--red)}.m-tab.a{border-color:var(--red);background:var(--red);color:#fff;box-shadow:0 4px 12px rgba(192,59,53,.2)}
+/* Location tabs */
+.tabs{display:flex;gap:5px;margin-bottom:12px;flex-wrap:wrap}.tab{padding:7px 14px;border-radius:100px;border:2px solid var(--border);background:#fff;color:var(--muted);font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;cursor:pointer;transition:all .2s}.tab:hover{border-color:var(--red);color:var(--red)}.tab.a{border-color:var(--red);background:var(--red-bg);color:var(--red)}
+.sub-tabs{display:flex;gap:5px;margin-bottom:16px;flex-wrap:wrap}.stab{padding:6px 14px;border-radius:100px;border:1.5px solid var(--border);background:#fff;color:var(--muted);font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:4px}.stab:hover{border-color:var(--blue);color:var(--blue)}.stab.a{border-color:var(--blue);background:var(--blue-bg);color:var(--blue)}.stab-badge{font-size:8px;padding:2px 6px;border-radius:100px;background:var(--muted);color:#fff;font-weight:800}
+/* Summary & hero */
+.summary{background:linear-gradient(135deg,var(--red),var(--red-hover));border-radius:var(--radius);padding:22px;color:#fff;margin-bottom:18px}.summary h2{font-family:'Montserrat',sans-serif;font-size:10px;font-weight:800;letter-spacing:2px;text-transform:uppercase;opacity:.8;margin-bottom:12px}.sg{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.si{background:rgba(255,255,255,.15);border-radius:12px;padding:10px 12px}.si-l{font-size:9px;opacity:.8;margin-bottom:2px}.si-v{font-family:'Montserrat',sans-serif;font-size:22px;font-weight:900}.si-s{font-size:8px;opacity:.6;margin-top:2px}
+.hero{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px}.hk{background:var(--card);border-radius:var(--radius);padding:20px;border:1px solid var(--border);box-shadow:var(--shadow)}.hk-l{font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:8px}.hk-v{font-family:'Montserrat',sans-serif;font-size:26px;font-weight:900;font-feature-settings:'tnum';letter-spacing:-.03em;line-height:1.1}.hk-sub{font-size:11px;color:var(--muted);margin-top:5px}
+.st{font-family:'Montserrat',sans-serif;font-size:16px;font-weight:800;color:var(--red);margin:24px 0 14px;letter-spacing:-.01em;display:flex;align-items:center;gap:8px}
+/* Therapist cards (tagesbriefing) */
+.tg{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:10px;margin-bottom:18px}
+.tc-card{background:var(--card);border-radius:16px;border:1px solid var(--border);overflow:hidden}.tc-card:hover{box-shadow:0 4px 16px rgba(0,0,0,.04)}.tc-card.hg{border-left:4px solid var(--red)}.tc-card.fu{border-left:4px solid var(--teal)}.tc-card.of{border-left:4px solid var(--border);opacity:.5}
+.tt{display:flex;align-items:center;justify-content:space-between;padding:14px 16px 6px;gap:8px}.tn{font-family:'Montserrat',sans-serif;font-size:14px;font-weight:800}.tb{padding:3px 9px;border-radius:100px;font-family:'Montserrat',sans-serif;font-size:9px;font-weight:800}.bf{background:var(--teal-bg);color:var(--teal)}.bg{background:var(--red-bg);color:var(--red)}.ba{background:var(--amber-bg);color:var(--amber)}
+.tm{display:flex;gap:10px;padding:0 16px 6px;font-size:10px;color:var(--muted);flex-wrap:wrap}.tm b{color:var(--dark);font-family:'Montserrat',sans-serif;font-weight:800}
+.tw{padding:0 16px 8px}.tb2{height:24px;background:#f3f2ef;border-radius:5px;display:flex;overflow:hidden}.ts{height:100%;min-width:1px}.ts.sp{background:var(--teal)}.ts.sg2{background:var(--red);opacity:.3}.ts.sps{background:repeating-linear-gradient(45deg,#e8e4df,#e8e4df 3px,#ddd8d2 3px,#ddd8d2 6px)}.ts.so{background:#f5f5f5}.tll{display:flex;justify-content:space-between;margin-top:2px;font-size:8px;color:var(--muted);font-family:'Montserrat',sans-serif;font-weight:600}
+.gl{padding:0 16px 10px}.gr{display:flex;align-items:center;gap:6px;padding:5px 8px;background:var(--red-bg);border-radius:6px;margin-bottom:3px;font-size:11px}.gt{font-family:'Montserrat',sans-serif;font-weight:800;font-size:11px;color:var(--red);min-width:90px}.gp{font-family:'Montserrat',sans-serif;font-weight:700;font-size:8px;padding:2px 7px;border-radius:100px;background:var(--red);color:#fff}.gn{font-size:9px;color:var(--muted)}
+.aw{padding:0 16px 12px}.ab{height:5px;background:#f0f0f0;border-radius:3px;overflow:hidden}.af{height:100%;border-radius:3px}.ai{display:flex;justify-content:space-between;margin-top:2px;font-size:8px;color:var(--muted);font-family:'Montserrat',sans-serif;font-weight:600}
+/* Action cards (lücken) */
+.ac{display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--card);border-radius:12px;border:1px solid var(--border);border-left:4px solid var(--red);margin-bottom:5px}.ac:hover{box-shadow:0 2px 8px rgba(0,0,0,.03)}.ac-b{flex:1}.ac-t{font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700}.ac-s{font-size:10px;color:var(--muted);margin-top:1px}.ac-p{font-family:'Montserrat',sans-serif;font-size:9px;font-weight:800;padding:4px 10px;border-radius:100px;background:var(--red-bg);color:var(--red);flex-shrink:0}
+/* Rezept KPIs */
+.rkpis{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:16px}.rkpi{background:var(--card);border-radius:14px;padding:12px;border:2px solid var(--border);cursor:pointer;transition:all .2s}.rkpi:hover{border-color:var(--red);transform:translateY(-1px)}.rkpi.active{border-color:var(--red);background:var(--red-bg)}.rkpi-l{font-family:'Montserrat',sans-serif;font-size:7px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:2px}.rkpi-v{font-family:'Montserrat',sans-serif;font-size:20px;font-weight:900;line-height:1.1}.rkpi-s{font-size:8px;color:var(--muted);margin-top:1px}
+.pr{background:var(--card);border-radius:10px;border:1px solid var(--border);padding:10px 12px;margin-bottom:4px;display:flex;align-items:center;gap:10px}.pr:hover{box-shadow:0 2px 8px rgba(0,0,0,.03)}.pr-i{flex:1;min-width:0}.pr-n{font-family:'Montserrat',sans-serif;font-size:12px;font-weight:800}.pr-d{font-size:9px;color:var(--muted);margin-top:1px;line-height:1.4}.pr-d b{font-weight:700;color:var(--dark)}.pr-t{text-align:right;flex-shrink:0}.pr-dt{font-family:'Montserrat',sans-serif;font-size:10px;font-weight:800}.pr-tm{font-size:9px;color:var(--muted)}.pr-th{font-size:8px;color:var(--muted)}
+.pr-bs{display:flex;gap:2px;flex-wrap:wrap;justify-content:flex-end;max-width:100px;flex-shrink:0}.pr-b{display:inline-block;padding:2px 6px;border-radius:100px;font-family:'Montserrat',sans-serif;font-size:7px;font-weight:800}
+.c-purple{background:var(--purple-bg);color:var(--purple)}.c-green{background:var(--green-bg);color:var(--green)}.c-red{background:var(--red-bg);color:var(--red)}.c-amber{background:var(--amber-bg);color:var(--amber)}.c-blue{background:var(--blue-bg);color:var(--blue)}.c-fire{background:var(--fire-bg);color:var(--fire)}
+.sc{font-family:'Montserrat',sans-serif;font-size:15px;font-weight:900;color:var(--fire);flex-shrink:0;width:28px;text-align:center}
+.d-t{font-family:'Montserrat',sans-serif;font-size:14px;font-weight:800;margin-bottom:8px;display:flex;align-items:center;gap:6px}.d-c{font-size:14px;cursor:pointer;margin-left:auto;color:var(--muted)}
+/* Auslastung */
+.ausl-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:16px}
+.ausl-card{background:var(--card);border-radius:var(--radius);padding:24px;border:1px solid var(--border);box-shadow:var(--shadow)}
+.ausl-card h4{font-family:'Montserrat',sans-serif;font-size:12px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:16px}
+.ausl-row{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.ausl-label{font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;width:100px;flex-shrink:0}
+.ausl-bar{flex:1;height:28px;background:#f3f2ef;border-radius:8px;overflow:hidden;position:relative}
+.ausl-fill{height:100%;border-radius:8px;display:flex;align-items:center;padding:0 10px;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:800;color:#fff;transition:width .6s ease;min-width:40px}
+.ausl-val{font-family:'Montserrat',sans-serif;font-size:14px;font-weight:900;width:55px;text-align:right;flex-shrink:0}
+.ausl-target{position:absolute;top:0;bottom:0;width:2px;background:var(--dark);opacity:.2}
+.kw-nav{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+.kw-nav h3{font-family:'Montserrat',sans-serif;font-size:16px;font-weight:800}
+.kw-btn{width:36px;height:36px;border-radius:50%;border:2px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;transition:all .2s;color:var(--dark)}.kw-btn:hover{border-color:var(--red);color:var(--red)}
+.kw-info{font-size:12px;color:var(--muted);font-weight:500}
+/* Warteliste */
+.wl-card{background:var(--card);border-radius:var(--radius);padding:24px;border:1px solid var(--border);box-shadow:var(--shadow);margin-bottom:16px}
+.wl-form{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.wl-input{flex:1;min-width:120px;padding:10px 16px;border-radius:100px;border:2px solid var(--border);font-size:13px;font-family:'Poppins',sans-serif;background:#fff}.wl-input:focus{outline:none;border-color:var(--red)}
+.wl-select{padding:10px 16px;border-radius:100px;border:2px solid var(--border);font-size:13px;font-family:'Poppins',sans-serif;background:#fff;cursor:pointer;min-width:120px}.wl-select:focus{outline:none;border-color:var(--red)}
+.wl-add{padding:10px 20px;border-radius:100px;border:none;background:var(--red);color:#fff;font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all .2s;white-space:nowrap}.wl-add:hover{background:var(--red-hover);transform:translateY(-1px)}
+/* Filters */
+.flt{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px;align-items:center}.fl{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--red);margin-right:4px}.fb{padding:7px 16px;border-radius:100px;border:2px solid var(--border);background:#fff;color:var(--muted);font-size:12px;font-weight:500;cursor:pointer;transition:all .2s;font-family:'Poppins',sans-serif;display:inline-flex;align-items:center;gap:6px}.fb:hover{border-color:var(--red);color:var(--red)}.fb.a{border-color:var(--red);background:var(--red-bg);color:var(--red);font-weight:600}.dot{width:8px;height:8px;border-radius:50%;display:inline-block}.sep{width:1px;height:24px;background:var(--border);margin:0 10px}.search{padding:7px 16px;border-radius:100px;border:2px solid var(--border);font-size:12px;font-family:'Poppins',sans-serif;width:220px;background:#fff}.search:focus{outline:none;border-color:var(--red)}
+/* Tables */
+.tcx{background:var(--card);border-radius:var(--radius);padding:20px;border:1px solid var(--border);box-shadow:var(--shadow);margin-bottom:24px;overflow-x:auto}.thd{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px}.thd h3,.thd h4{font-family:'Montserrat',sans-serif;font-size:15px;font-weight:800;margin:0}.thd .cnt{font-family:'Montserrat',sans-serif;font-size:10px;font-weight:800;background:var(--red-bg);color:var(--red);padding:5px 12px;border-radius:100px}
+table.data-t{width:100%;border-collapse:separate;border-spacing:0 4px;font-size:12px}table.data-t thead th{text-align:left;padding:8px 12px;font-family:'Montserrat',sans-serif;font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--muted);cursor:pointer;white-space:nowrap}table.data-t thead th:hover{color:var(--red)}table.data-t thead th.r{text-align:right}table.data-t thead th.sorted{color:var(--red)}table.data-t thead th .arrow{font-size:8px;margin-left:3px}
+table.data-t tbody tr{background:var(--card);border-radius:12px;transition:all .15s}table.data-t tbody tr:hover{box-shadow:0 4px 16px rgba(0,0,0,.04)}table.data-t tbody tr.urgent{background:var(--red-bg)}table.data-t td{padding:10px 12px}table.data-t td:first-child{border-radius:12px 0 0 12px}table.data-t td:last-child{border-radius:0 12px 12px 0}table.data-t td.r{text-align:right;font-feature-settings:'tnum'}
+.pn{font-family:'Montserrat',sans-serif;font-weight:700;font-size:12px}.th-sub{font-size:10px;color:var(--muted);margin-top:2px}.badge{display:inline-block;padding:3px 10px;border-radius:100px;font-family:'Montserrat',sans-serif;font-size:9px;font-weight:800}.b-red{background:var(--red-bg);color:var(--red)}.b-amber{background:var(--amber-bg);color:var(--amber)}.b-teal{background:var(--teal-bg);color:var(--teal)}.days{font-family:'Montserrat',sans-serif;font-size:15px;font-weight:900}
+.standort{font-family:'Montserrat',sans-serif;font-size:9px;font-weight:800;padding:3px 9px;border-radius:100px;letter-spacing:.5px}.s-kimojo{background:var(--red-bg);color:var(--red)}.s-phfip{background:var(--teal-bg);color:var(--teal)}.s-ergo{background:var(--ergo-bg);color:var(--ergo)}
+.expand-btn{background:none;border:none;cursor:pointer;font-size:13px;color:var(--muted);transition:all .2s;width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center}.expand-btn:hover{background:var(--red-bg);color:var(--red)}.expand-btn.open{transform:rotate(90deg);color:var(--red)}.detail-row{display:none}.detail-row.open{display:table-row}.detail-content{padding:8px 16px 14px 40px}.dtable{width:100%;font-size:11px;border-collapse:collapse;margin-top:8px}.dtable th{text-align:left;padding:5px 8px;font-family:'Montserrat',sans-serif;font-weight:700;color:var(--muted);font-size:9px;text-transform:uppercase;border-bottom:2px solid var(--border)}.dtable td{padding:5px 8px;border-bottom:1px solid var(--border)}
+.act{padding:5px 12px;border-radius:100px;border:2px solid var(--border);background:#fff;font-size:10px;font-weight:600;cursor:pointer;font-family:'Poppins',sans-serif;transition:all .15s;margin:2px}.act:hover{border-color:var(--red);color:var(--red);background:var(--red-bg)}.act.done{border-color:var(--teal);background:var(--teal-bg);color:#00907a}
+.wl-empty{text-align:center;padding:24px;color:var(--muted);font-size:13px}
+.ft{text-align:center;padding:20px;font-size:11px;color:var(--muted);font-family:'Montserrat',sans-serif;font-weight:600}
+@media(max-width:1000px){.rkpis{grid-template-columns:repeat(4,1fr)}.ausl-grid{grid-template-columns:1fr}}
+@media(max-width:900px){.hero,.sg{grid-template-columns:1fr 1fr}.tg{grid-template-columns:1fr}}
+@media(max-width:600px){.hero,.sg,.rkpis{grid-template-columns:repeat(2,1fr)}.search{width:100%}}
+</style>
+</head>
+<body>
+<div id="lo"><div class="lb"><h1>Praxismanagement</h1><p>KIMOJO · To-Do's & Controlling</p><button class="l-btn" onclick="signIn()"><svg viewBox="0 0 21 21" width="20" height="20"><rect x="1" y="1" width="9" height="9" fill="#f25022"/><rect x="11" y="1" width="9" height="9" fill="#7fba00"/><rect x="1" y="11" width="9" height="9" fill="#00a4ef"/><rect x="11" y="11" width="9" height="9" fill="#ffb900"/></svg>Mit Microsoft anmelden</button><div class="l-err" id="er"></div></div></div>
+<div class="loading h" id="ld"><div class="spinner"></div><p id="lt">Lade...</p></div>
+<div id="db"><div class="mx">
+<div class="hdr"><h1>☀️ <span>Praxismanagement</span></h1><div class="hdr-r"><span id="lastUp" style="font-size:11px;color:var(--muted)"></span><button class="hdr-btn" onclick="loadAll()">↻</button><button class="hdr-btn" onclick="signOut()">Abmelden</button></div></div>
+<div class="main-tabs" id="mainTabs"></div>
+<div id="mc"></div>
+</div></div>
+<script>
+// ═══════════════════════════════════════════════════════════
+// MSAL AUTH (BM Group Dashboard App)
+// ═══════════════════════════════════════════════════════════
+const MC={auth:{clientId:"9fe9cda7-79c3-4d06-82dc-372715bb8086",authority:"https://login.microsoftonline.com/3e5c8d47-8ccc-42f6-877d-0d0e72972e39",redirectUri:window.location.origin+window.location.pathname},cache:{cacheLocation:"sessionStorage"}};
+const LR={scopes:["Files.Read","Files.ReadWrite","Sites.Read.All"]};
+const ma=new msal.PublicClientApplication(MC);
+const isMobile=/Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
+
+async function signIn(){try{document.getElementById('er').style.display='none';if(isMobile){await ma.loginRedirect(LR);}else{const r=await ma.loginPopup(LR);ma.setActiveAccount(r.account);await loadAll();}}catch(e){document.getElementById('er').textContent=e.message;document.getElementById('er').style.display='block';}}
+function signOut(){if(isMobile){ma.logoutRedirect();}else{ma.logoutPopup();}document.getElementById('db').style.display='none';document.getElementById('lo').style.display='flex';}
+async function getToken(){const a=ma.getActiveAccount();try{return(await ma.acquireTokenSilent({...LR,account:a})).accessToken;}catch(e){if(isMobile){await ma.acquireTokenRedirect(LR);return null;}return(await ma.acquireTokenPopup(LR)).accessToken;}}
+ma.initialize().then(async()=>{
+  try{const resp=await ma.handleRedirectPromise();if(resp){ma.setActiveAccount(resp.account);await loadAll();return;}}catch(e){}
+  const a=ma.getAllAccounts();if(a.length>0){ma.setActiveAccount(a[0]);await loadAll();}
+});
+
+// ═══════════════════════════════════════════════════════════
+// CONFIG
+// ═══════════════════════════════════════════════════════════
+const SITES={kimojo:{host:'kimojophysiotherapie.sharepoint.com',path:'/sites/KIMOJOManagement'},phfip:{host:'kimojophysiotherapie.sharepoint.com',path:'/sites/PfFiP-TeamPortal'}};
+const SP='/sites/KIMOJOManagement',BASE='/04_Finanzen & Controlling/Finanzen/2026/Controlling/';
+const MG=20;
+const LOCS=[
+  {id:'f1p',label:'KIMOJO #1 Physio',suf:'_f1',filter:'physio',bereich:4},
+  {id:'f1e',label:'KIMOJO #1 Ergo',suf:'_f1',filter:'ergo',bereich:1},
+  {id:'f2',label:'KIMOJO #2',suf:'_f2',filter:null,bereich:4},
+  {id:'f3',label:'KIMOJO #3',suf:'',filter:null,bereich:4},
+  {id:'f4',label:'PhFiP',suf:'_f4',filter:null,bereich:4}
+];
+// Patientenchecker sources
+const SOURCES=[{id:'7BB83665-B91D-4E99-9FDB-E6CBA0496721',label:'KIMOJO F1',filiale:'KIMOJO #1',site:'kimojo'},{id:'C7C25E25-8770-4123-B0F0-39B550252905',label:'KIMOJO F2',filiale:'KIMOJO #2',site:'kimojo'},{id:'C3F9A7D3-452D-4ED5-8C3B-602BB7910A2F',label:'KIMOJO F3',filiale:'KIMOJO #3',site:'kimojo'},{id:'6230A887-EE13-4FA7-86DA-C1FDBEE62B5F',label:'PHFIP F4',filiale:'PHFIP',site:'kimojo'}];
+const KPI_FILES={kimojo:{id:'a9b8cad6-e1bd-414d-8aaf-503a0e18822f',site:'kimojo'},phfip:{id:'770759B1-D4F0-48A1-804B-7EB765D00E5F',site:'phfip'}};
+const WL_FILE={id:'92f4b5ac-6e36-4135-9b36-7cf3bbbd0d20',site:'kimojo',sheet:'Warteliste'};
+const WL_HEADERS=['Patient','Telefon','Therapeut','Standort','Priorität','Kategorie','Zeitwunsch','Notiz','Status','Letzte Leistung','Letzter Termin','Tage her','Erstellt am','Erstellt von'];
+
+// ═══════════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════════
+const DATA={};let behData=null,plData=null,ergoDetailData=null,RCS={},RC=null;
+let driveId=null,drives={},curLoc='f3',curSub='heute',curView='luecken';
+let overduePatients=[],currentSort={col:'daysAgo',asc:false},minWeeks=2,standortFilter='all';
+let auslastungData={kimojo:[],phfip:[]},selectedKW=0;
+const statusMap=JSON.parse(localStorage.getItem('rezeptStatus')||'{}');
+let wlData=[],wlView='all',wlStatusFilter='all';
+
+// ═══════════════════════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════════════════════
+const gql=u=>fetch(u,{headers:{Authorization:'Bearer '+window._token}}).then(r=>r.ok?r.json():null);
+async function getSheet(did,fid,sn){const r=await gql(`https://graph.microsoft.com/v1.0/drives/${did}/items/${fid}/workbook/worksheets('${encodeURIComponent(sn)}')/usedRange`);return r?r.values:null;}
+async function getSheetNames(did,fid){const r=await gql(`https://graph.microsoft.com/v1.0/drives/${did}/items/${fid}/workbook/worksheets`);return r?r.value.map(s=>s.name):[];}
+async function resolveDrive(k){const s=SITES[k];const site=await gql(`https://graph.microsoft.com/v1.0/sites/${s.host}:${s.path}`);if(!site)return null;const d=await gql(`https://graph.microsoft.com/v1.0/sites/${site.id}/drive`);return d?d.id:null;}
+async function loadJSON(p){const f=BASE+p;const e=f.split('/').filter(s=>s).map(s=>encodeURIComponent(s)).join('/');const r=await fetch('https://graph.microsoft.com/v1.0/drives/'+driveId+'/root:/'+e+':/content',{headers:{Authorization:'Bearer '+window._token}});if(!r.ok)return null;return JSON.parse((await r.text()).replace(/^\uFEFF/,''));}
+async function gqlPatch(url,body){return fetch(url,{method:'PATCH',headers:{Authorization:'Bearer '+window._token,'Content-Type':'application/json'},body:JSON.stringify(body)}).then(r=>r.ok?r.json():null);}
+function parseDate(v){if(!v)return null;const s=String(v).trim();let m=s.match(/^(\d{1,2})\.(\d{1,2})\.(\d{2,4})$/);if(m){const y=m[3].length===2?2000+parseInt(m[3]):parseInt(m[3]);return new Date(y,parseInt(m[2])-1,parseInt(m[1]));}m=s.match(/^(\d{4})-(\d{2})-(\d{2})/);if(m)return new Date(parseInt(m[1]),parseInt(m[2])-1,parseInt(m[3]));if(typeof v==='number'&&v>40000){const d=new Date((v-25569)*86400000);if(!isNaN(d))return d;}return null;}
+function pName(r){if(!r)return'';return r.replace(/\s*\(.*?\)\s*/g,'').replace(/\s*,\s*/,' ').trim();}
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function escA(s){return String(s||'').replace(/'/g,"\\'").replace(/"/g,'&quot;');}
+const fm=n=>n.toLocaleString('de-DE',{style:'currency',currency:'EUR'});
+function sC(s){return s==='PHFIP'?'s-phfip':/Ergo/i.test(s)?'s-ergo':'s-kimojo';}
+function fmt(d){return d.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'});}
+function auslColor(v){return v>=90?'var(--teal)':v>=80?'var(--amber)':'var(--red)';}
+function auslBg(v){return v>=90?'var(--teal)':v>=80?'var(--amber)':'var(--red)';}
+function getCurrentKW(){const d=new Date();d.setHours(0,0,0,0);d.setDate(d.getDate()+3-(d.getDay()+6)%7);const w1=new Date(d.getFullYear(),0,4);return 1+Math.round(((d.getTime()-w1.getTime())/864e5-3+(w1.getDay()+6)%7)/7);}
+
+// Extrahiert Telefonnummer aus Patienten-Objekt — probiert diverse Feldnamen
+function extractPhone(pRec){
+  if(!pRec)return'';
+  const fields=['TelefonMobil','Mobiltelefon','Handy','MobilTelefon','Mobile','TelefonPrivat','TelefonGeschaeftlich','Telefon','Telefon1','Telefon2','PhoneMobile','Phone'];
+  for(const f of fields){if(pRec[f]&&String(pRec[f]).trim())return String(pRec[f]).trim();}
+  if(pRec.Kontakt){for(const f of fields){if(pRec.Kontakt[f]&&String(pRec.Kontakt[f]).trim())return String(pRec.Kontakt[f]).trim();}}
+  return'';
+}
+
+// Normalisiert Telefonnummer ins E.164-Format (+49...)
+function normPhone(raw){
+  if(!raw)return'';
+  let s=String(raw).replace(/[^\d+]/g,'');
+  if(!s)return'';
+  if(s.startsWith('00'))s='+'+s.slice(2);
+  else if(s.startsWith('0'))s='+49'+s.slice(1);
+  else if(!s.startsWith('+'))s='+49'+s;
+  return s;
+}
+// Liefert das korrekte Label für "morgen" — berücksichtigt Wochenende
+// Fr → "Montag", Sa → "Montag", So → "Montag", sonst → "Morgen"
+function getMorgenLabel(){
+  const dow=new Date().getDay(); // 0=So, 5=Fr, 6=Sa
+  if(dow===5||dow===6||dow===0)return'Montag';
+  return'Morgen';
+}
+
+// ═══════════════════════════════════════════════════════════
+// MAIN TAB SWITCHING
+// ═══════════════════════════════════════════════════════════
+function renderMainTabs(){
+  let h='';
+  h+=`<button class="m-tab${curView==='luecken'?' a':''}" onclick="switchView('luecken')">⚡ Lücken</button>`;
+  h+=`<button class="m-tab${curView==='warteliste'?' a':''}" onclick="switchView('warteliste')">📋 Warteliste</button>`;
+  h+=`<button class="m-tab${curView==='offene'?' a':''}" onclick="switchView('offene')">💰 Offene Rezepte</button>`;
+  h+=`<button class="m-tab${curView==='controlling'?' a':''}" onclick="switchView('controlling')">📊 Controlling</button>`;
+  h+=`<button class="m-tab${curView==='feedback'?' a':''}" onclick="switchView('feedback')">📱 Feedback</button>`;
+  document.getElementById('mainTabs').innerHTML=h;
+}
+
+function switchView(v){
+  curView=v;renderMainTabs();
+  if(v==='luecken')renderLuecken();
+  else if(v==='warteliste')renderWartelistePage();
+  else if(v==='offene')renderOffenePage();
+  else if(v==='controlling')renderControlling();
+  else if(v==='feedback')renderFeedback();
+}
+
+// ═══════════════════════════════════════════════════════════
+// LOAD ALL DATA
+// ═══════════════════════════════════════════════════════════
+async function loadAll(){
+  const ld=document.getElementById('ld'),lt=document.getElementById('lt');
+  ld.classList.remove('h');document.getElementById('lo').style.display='none';
+  try{
+    lt.textContent='Verbinde...';window._token=await getToken();
+    if(!window._token)return;
+
+    // Resolve drives
+    lt.textContent='Verbinde KIMOJO...';drives.kimojo=await resolveDrive('kimojo');driveId=drives.kimojo;
+    lt.textContent='Verbinde PHFIP...';try{drives.phfip=await resolveDrive('phfip');}catch(e){console.warn('PHFIP:',e);}
+
+    // Load Tages-Briefing JSON files
+    const suffixes=['','_f1','_f2','_f4'];
+    for(const suf of suffixes){
+      lt.textContent='Lade Terminplan'+(suf||' F3')+'...';
+      DATA[suf]={heute:{tp:null,az:null},morgen:{tp:null,az:null}};
+      DATA[suf].heute.tp=await loadJSON('terminplan_heute'+suf+'.json');
+      DATA[suf].morgen.tp=await loadJSON('terminplan_morgen'+suf+'.json');
+      DATA[suf].heute.az=await loadJSON('arbeitszeiten_heute'+suf+'.json');
+      DATA[suf].morgen.az=await loadJSON('arbeitszeiten_morgen'+suf+'.json');
+    }
+
+    lt.textContent='Lade Rezeptdaten...';
+    plData=await loadJSON('patientenliste.json');
+    behData=await loadJSON('behandlungen_alle.json');
+    ergoDetailData=await loadJSON('ergo_verordnungen_detail.json');
+
+    // PAT_IDS
+    lt.textContent='Lade Patientenzuordnung...';
+    const PAT_IDS={};
+    const tp7f3=await loadJSON('terminplan_7tage_f3.json');
+    const tp7f1=await loadJSON('terminplan_7tage_f1.json');
+    const tp7f2=await loadJSON('terminplan_7tage_f2.json');
+    const tp7f4=await loadJSON('terminplan_7tage_f4.json');
+    function extractPids(data){const ids=new Set();if(!data||!Array.isArray(data))return ids;data.forEach(id=>{if(id)ids.add(id);});return ids;}
+    const f1Pids=extractPids(tp7f1);
+    PAT_IDS['f1p']=f1Pids;
+    const f1ePids=new Set(f1Pids);
+    if(ergoDetailData&&Array.isArray(ergoDetailData)){ergoDetailData.forEach(e=>{if(e.Verordnung?.Patient?.Id)f1ePids.add(e.Verordnung.Patient.Id);});}
+    PAT_IDS['f1e']=f1ePids;
+    PAT_IDS['f2']=extractPids(tp7f2);
+    PAT_IDS['f3']=extractPids(tp7f3);
+    PAT_IDS['f4']=extractPids(tp7f4);
+    window._PAT_IDS=PAT_IDS;
+
+    // Build rezept analysis
+    RCS={};
+    if(behData){
+      LOCS.forEach(loc=>{
+        const pids=PAT_IDS[loc.id]||new Set();
+        const filteredBeh=behData.filter(p=>pids.has(p.patientId));
+        const locTp=[...(DATA[loc.suf].heute.tp||[]),...(DATA[loc.suf].morgen.tp||[])];
+        const filtered=filterTP(locTp,null,loc.filter);
+        const heuteTP=DATA[loc.suf].heute.tp||[];const morgenTP=DATA[loc.suf].morgen.tp||[];
+        const heuteDate=heuteTP.length?heuteTP[0].Beginn.slice(0,10):null;
+        const morgenDate=morgenTP.length?morgenTP[0].Beginn.slice(0,10):null;
+        RCS[loc.id]={
+          heute:analyzeRezepte(filtered.tp,filteredBeh,plData,loc.bereich,ergoDetailData,heuteDate),
+          morgen:analyzeRezepte(filtered.tp,filteredBeh,plData,loc.bereich,ergoDetailData,morgenDate||heuteDate)
+        };
+      });
+    }
+
+    // Load Excel data for Patientenchecker features
+    let allRows=[];
+    for(const src of SOURCES){try{lt.textContent=`Lade ${src.label}...`;const did=drives[src.site];if(!did)continue;const sheets=await getSheetNames(did,src.id);const sn=sheets[0]||'Export';const data=await getSheet(did,src.id,sn);if(data){for(let r=1;r<data.length;r++){const row=data[r];if(!row||!row[0])continue;const thName=String(row[0]||'');const isErgo=/ergo/i.test(thName);const standort=isErgo?'Ergotherapie':src.filiale;allRows.push({therapeut:thName,datum:parseDate(row[1]),patient:row[4]||'',posNr:String(row[5]||''),leistung:row[6]||'',uhrzeit:row[2]||'',preis:typeof row[7]==='number'?row[7]:parseFloat(String(row[7]||'0').replace(',','.'))||0,abgerechnet:String(row[8]||'').toUpperCase()==='WAHR'||String(row[8]||'').toUpperCase()==='TRUE'||row[8]===true||row[8]===1,standort});}}}catch(e){console.warn(`${src.label}:`,e);}}
+    analyzePatients(allRows);
+
+    // Load Auslastung
+    for(const[key,kpi] of Object.entries(KPI_FILES)){try{lt.textContent=`Lade Auslastung ${key}...`;const did=drives[kpi.site];if(!did)continue;const data=await getSheet(did,kpi.id,'Auslastung');if(data)auslastungData[key]=parseAuslastung(data);}catch(e){console.warn(`Ausl ${key}:`,e);}}
+    const curKW=getCurrentKW();
+    const allKWs=[...auslastungData.kimojo.map(d=>d.kw),...auslastungData.phfip.map(d=>d.kw)];
+    selectedKW=Math.min(curKW-1,allKWs.length?Math.max(...allKWs):curKW-1);
+
+    // Load Warteliste
+    lt.textContent='Lade Warteliste...';await loadWL();
+    lt.textContent='Prüfe Patienten...';await autoDetectWLPatients(allRows);
+
+    document.getElementById('db').style.display='block';
+    document.getElementById('lastUp').textContent='⏱ '+new Date().toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'});
+    renderMainTabs();switchView('luecken');
+  }catch(e){console.error(e);document.getElementById('lo').style.display='flex';document.getElementById('er').textContent=e.message;document.getElementById('er').style.display='block';}
+  finally{ld.classList.add('h');}
+}
+
+// ═══════════════════════════════════════════════════════════
+// VIEW: LÜCKEN (nur Tages-Briefing + Rezept-Handlungen)
+// ═══════════════════════════════════════════════════════════
+function renderLuecken(){
+  let h='';
+  h+='<div class="tabs" id="locTabs"></div>';
+  h+='<div class="sub-tabs" id="subTabs"></div>';
+  h+='<div id="dayBriefing"></div>';
+  h+='<div class="ft">KIMOJO · Lücken</div>';
+  document.getElementById('mc').innerHTML=h;
+  renderLocTabs();
+  renderSubTabs();
+  renderDayView();
+}
+
+// ═══════════════════════════════════════════════════════════
+// VIEW: WARTELISTE (eigener Tab)
+// ═══════════════════════════════════════════════════════════
+function renderWartelistePage(){
+  let h='';
+  h+='<div class="st">📋 Warteliste</div>';
+  h+='<div id="wlContainer"></div>';
+  h+='<div class="ft">KIMOJO · Warteliste</div>';
+  document.getElementById('mc').innerHTML=h;
+  renderWL();
+}
+
+// ═══════════════════════════════════════════════════════════
+// VIEW: OFFENE REZEPTE (eigener Tab)
+// ═══════════════════════════════════════════════════════════
+function renderOffenePage(){
+  let h='';
+  h+='<div class="st">💰 Offene Rezepte</div>';
+  h+='<div id="offeneContainer"></div>';
+  h+='<div class="ft">KIMOJO · Offene Rezepte</div>';
+  document.getElementById('mc').innerHTML=h;
+  renderOffeneRezepte();
+}
+
+// ═══════════════════════════════════════════════════════════
+// VIEW: FEEDBACK (WhatsApp-Versand an Patienten mit abgeschlossenem Rezept)
+// ═══════════════════════════════════════════════════════════
+let feedbackKW=0; // Aktuell ausgewählte KW für Feedback-Liste
+let feedbackStandort='all'; // Filter: alle / KIMOJO / PHFIP
+
+// KW-Berechnung (ISO-8601, wie getCurrentKW, aber für beliebiges Datum)
+function isoWeek(d){
+  const date=new Date(d);date.setHours(0,0,0,0);
+  date.setDate(date.getDate()+3-(date.getDay()+6)%7);
+  const w1=new Date(date.getFullYear(),0,4);
+  return 1+Math.round(((date.getTime()-w1.getTime())/864e5-3+(w1.getDay()+6)%7)/7);
+}
+
+// Sammelt alle Patienten, deren Rezept in gegebener KW abgeschlossen wurde
+// und die aktuell keine zukünftigen Termine haben
+function getFeedbackPatients(targetKW,targetYear){
+  if(!behData||!Array.isArray(behData))return[];
+  const plMap={};
+  if(plData&&Array.isArray(plData))plData.forEach(p=>{if(p?.Id)plMap[p.Id]=p;});
+  const today=new Date();today.setHours(0,0,0,0);
+  const result=[];
+  behData.forEach(p=>{
+    const pid=p.patientId;if(!pid)return;
+    const vos=(p.data?.Verordnungen||[]);
+    // Prüfe alle Verordnungen: Welche wurden in target-KW komplett abgeschlossen?
+    let lastFinishedVo=null,lastTerminDate=null,lastTherapeut='';
+    let hasFutureTermin=false;
+    vos.forEach(v=>{
+      const te=v.Termine||[];if(!te.length)return;
+      const open=te.filter(t=>t.Status===1).length;
+      const done=te.filter(t=>t.Status===4).length;
+      // Zukünftige geplante Termine (Status 1 mit Datum > heute)
+      te.forEach(t=>{
+        if(t.Status===1&&t.Datum){
+          const d=new Date(t.Datum);
+          if(d>=today)hasFutureTermin=true;
+        }
+      });
+      // Rezept gilt als abgeschlossen: alle erbracht, keine offenen
+      if(done>0&&open===0){
+        // Letzter erbrachter Termin = Abschlussdatum
+        const doneTe=te.filter(t=>t.Status===4&&t.Datum).map(t=>({d:new Date(t.Datum),n:t.MitarbeiterName||''}));
+        if(!doneTe.length)return;
+        doneTe.sort((a,b)=>b.d-a.d);
+        const last=doneTe[0];
+        const kw=isoWeek(last.d);const yr=last.d.getFullYear();
+        if(kw===targetKW&&yr===targetYear){
+          if(!lastTerminDate||last.d>lastTerminDate){
+            lastTerminDate=last.d;lastFinishedVo=v;lastTherapeut=last.n;
+          }
+        }
+      }
+    });
+    if(!lastFinishedVo||hasFutureTermin)return;
+    // Patient hat abgeschlossenes Rezept in target-KW und keinen Folgetermin
+    const pl=plMap[pid];
+    const name=pl?((pl.Nachname||'')+', '+(pl.Vorname||'')):'Unbekannt';
+    const vorname=pl?.Vorname||'';
+    const nachname=pl?.Nachname||'';
+    const phone=normPhone(extractPhone(pl||{}));
+    const beschr=lastFinishedVo.Beschreibung||'';
+    const ort=pl?.Ort||'';
+    result.push({pid,name,vorname,nachname,phone,therapeut:lastTherapeut,lastDate:lastTerminDate,beschr,ort});
+  });
+  // Sortierung: nach Datum absteigend (neueste zuerst)
+  result.sort((a,b)=>b.lastDate-a.lastDate);
+  return result;
+}
+
+function renderFeedback(){
+  // Default: aktuelle KW wählen
+  const curKW=getCurrentKW();
+  if(!feedbackKW)feedbackKW=curKW;
+  const curYear=new Date().getFullYear();
+  let h='';
+  h+='<div class="st">📱 Feedback · WhatsApp an Patienten</div>';
+  h+='<div class="kw-nav"><button class="kw-btn" onclick="changeFeedbackKW(-1)">←</button><h3 id="fbKwTitle">KW '+feedbackKW+'</h3><button class="kw-btn" onclick="changeFeedbackKW(1)">→</button><span class="kw-info" id="fbKwInfo"></span></div>';
+  h+='<div id="fbContainer"></div>';
+  h+='<div class="ft">KIMOJO · Feedback-Anfragen</div>';
+  document.getElementById('mc').innerHTML=h;
+  renderFeedbackList();
+}
+
+function changeFeedbackKW(d){
+  const curKW=getCurrentKW();
+  // Max aktuelle KW, kein Zukunfts-Feedback, min 1
+  feedbackKW=Math.max(1,Math.min(curKW,feedbackKW+d));
+  const el=document.getElementById('fbKwTitle');if(el)el.textContent='KW '+feedbackKW;
+  renderFeedbackList();
+}
+
+function renderFeedbackList(){
+  const el=document.getElementById('fbContainer');if(!el)return;
+  const curYear=new Date().getFullYear();
+  const pts=getFeedbackPatients(feedbackKW,curYear);
+  // Filter nach Standort (aus Patientenort ableitbar, aber besser aus letzter Excel-Zeile vom analyzePatients; hier nutzen wir overduePatients-Standorte als Lookup)
+  const standortByName={};
+  if(overduePatients&&overduePatients.length){
+    overduePatients.forEach(op=>{standortByName[op.patient.toLowerCase()]=op.standort;});
+  }
+  pts.forEach(p=>{p.standort=standortByName[p.name.toLowerCase()]||'—';});
+  const filtered=feedbackStandort==='all'?pts:pts.filter(p=>{
+    if(feedbackStandort==='KIMOJO')return p.standort.startsWith('KIMOJO')||p.standort==='Ergotherapie';
+    if(feedbackStandort==='PHFIP')return p.standort==='PHFIP';
+    return true;
+  });
+  const infoEl=document.getElementById('fbKwInfo');
+  if(infoEl){
+    const curKW=getCurrentKW();
+    const label=feedbackKW===curKW?'Aktuelle KW':(feedbackKW===curKW-1?'Letzte KW':'KW '+feedbackKW);
+    infoEl.textContent=label+' · '+pts.length+' abgeschlossene Rezepte';
+  }
+  // KPI-Karten
+  const mitTel=pts.filter(p=>p.phone).length;
+  const ohneTel=pts.length-mitTel;
+  let h='';
+  h+='<div class="hero">';
+  h+='<div class="hk"><div class="hk-l">Patienten gesamt</div><div class="hk-v" style="color:var(--red)">'+pts.length+'</div><div class="hk-sub">Rezept abgeschlossen KW '+feedbackKW+'</div></div>';
+  h+='<div class="hk"><div class="hk-l">Mit Telefon</div><div class="hk-v" style="color:var(--teal)">'+mitTel+'</div><div class="hk-sub">📱 WhatsApp möglich</div></div>';
+  h+='<div class="hk"><div class="hk-l">Ohne Telefon</div><div class="hk-v" style="color:var(--amber)">'+ohneTel+'</div><div class="hk-sub">⚠️ Nummer fehlt</div></div>';
+  h+='<div class="hk"><div class="hk-l">Angezeigt</div><div class="hk-v">'+filtered.length+'</div><div class="hk-sub">nach Filter</div></div>';
+  h+='</div>';
+  // Standort-Filter
+  h+='<div class="flt"><span class="fl">Standort</span>';
+  h+='<button class="fb '+(feedbackStandort==='all'?'a':'')+'" onclick="setFeedbackStandort(\'all\',this)">Alle</button>';
+  h+='<button class="fb '+(feedbackStandort==='KIMOJO'?'a':'')+'" onclick="setFeedbackStandort(\'KIMOJO\',this)"><span class="dot" style="background:var(--red)"></span>KIMOJO</button>';
+  h+='<button class="fb '+(feedbackStandort==='PHFIP'?'a':'')+'" onclick="setFeedbackStandort(\'PHFIP\',this)"><span class="dot" style="background:var(--teal)"></span>PHFIP</button>';
+  h+='</div>';
+  if(!filtered.length){
+    h+='<div class="tcx"><div class="wl-empty">Keine Patienten in KW '+feedbackKW+' zum Anschreiben</div></div>';
+    el.innerHTML=h;return;
+  }
+  h+='<div class="tcx"><div class="thd"><h3>📱 Patienten kontaktieren</h3><span class="cnt">'+filtered.length+' Patienten</span></div>';
+  h+='<table class="data-t"><thead><tr><th>Patient</th><th>Therapeut</th><th>Standort</th><th class="r">Abgeschlossen am</th><th>Telefon</th><th></th></tr></thead><tbody>';
+  filtered.forEach(p=>{
+    const sCls=sC(p.standort);
+    const fd=p.lastDate.toLocaleDateString('de-DE',{weekday:'short',day:'2-digit',month:'2-digit'});
+    // WhatsApp-Link: web.whatsapp.com/send?phone=... — öffnet direkt WhatsApp Web Chatfenster
+    const waLink=p.phone?'https://web.whatsapp.com/send?phone='+p.phone.replace(/[^0-9]/g,''):null;
+    const telCell=p.phone?'<a href="tel:'+esc(p.phone)+'" style="color:var(--red);font-weight:600;text-decoration:none;font-size:11px">'+esc(p.phone)+'</a>':'<span style="color:var(--muted);font-size:10px">—</span>';
+    const waCell=waLink?'<a href="'+esc(waLink)+'" target="_blank" rel="noopener" style="padding:6px 14px;background:#25D366;color:#fff;border-radius:100px;font-family:Montserrat;font-size:11px;font-weight:800;text-decoration:none;white-space:nowrap">💬 WhatsApp</a>':'<span style="color:var(--muted);font-size:10px;font-style:italic">keine Nummer</span>';
+    h+='<tr>';
+    h+='<td><div class="pn">'+esc(p.name)+'</div>'+(p.beschr?'<div class="th-sub">'+esc(p.beschr)+'</div>':'')+'</td>';
+    h+='<td><div>'+esc(pName(p.therapeut))+'</div></td>';
+    h+='<td><span class="standort '+sCls+'">'+esc(p.standort)+'</span></td>';
+    h+='<td class="r">'+fd+'</td>';
+    h+='<td>'+telCell+'</td>';
+    h+='<td>'+waCell+'</td>';
+    h+='</tr>';
+  });
+  h+='</tbody></table></div>';
+  el.innerHTML=h;
+}
+
+function setFeedbackStandort(s,el){
+  feedbackStandort=s;
+  document.querySelectorAll('#mc .flt .fb').forEach(b=>b.classList.remove('a'));
+  el.classList.add('a');
+  renderFeedbackList();
+}
+
+// ═══════════════════════════════════════════════════════════
+// VIEW: CONTROLLING (Auslastung + Therapeuten-Karten)
+// ═══════════════════════════════════════════════════════════
+function renderControlling(){
+  let h='';
+  h+='<div class="st">📊 Auslastung (KW-Übersicht)</div>';
+  h+='<div class="kw-nav"><button class="kw-btn" onclick="changeKW(-1)">←</button><h3 id="kwTitle">KW '+selectedKW+'</h3><button class="kw-btn" onclick="changeKW(1)">→</button><span class="kw-info" id="kwMonth"></span></div>';
+  h+='<div class="ausl-grid" id="auslDiv"></div>';
+  // Location tabs for therapist cards
+  h+='<div class="st">👥 Therapeuten · Tagesauslastung</div>';
+  h+='<div class="tabs" id="locTabsCtrl"></div>';
+  h+='<div class="sub-tabs" id="subTabsCtrl"></div>';
+  h+='<div id="therapeutenCtrl"></div>';
+  // Zuweiser-Übersicht (Ärzte)
+  h+='<div class="st">🏥 Zuweiser · Top Ärzte</div>';
+  h+='<div id="zuweiserContainer"></div>';
+  h+='<div class="ft">KIMOJO · Controlling</div>';
+  document.getElementById('mc').innerHTML=h;
+  renderAuslastung();
+  renderLocTabsCtrl();
+  renderSubTabsCtrl();
+  renderTherapeutenCtrl();
+  renderZuweiser();
+}
+
+// ═══════════════════════════════════════════════════════════
+// ZUWEISER-MODUL (Top-Ärzte und ihre Patienten)
+// ═══════════════════════════════════════════════════════════
+let zuweiserSource='ergo'; // aktuell: 'ergo' (später: 'physio', 'phfip', 'all')
+let zuweiserSort='count';   // 'count' / 'patients' / 'name' / 'blanko'
+let zuweiserPeriod='all';   // 'all' / 'thisMonth' / 'lastMonth' / 'last3'
+
+// Manuell gepflegte Arzt-Namen (Key = LANR oder ArztId)
+const arztNamesManual=JSON.parse(localStorage.getItem('arztNames')||'{}');
+function saveArztName(key,name){
+  const t=(name||'').trim();
+  if(t)arztNamesManual[key]={name:t,updated:Date.now()};
+  else delete arztNamesManual[key];
+  localStorage.setItem('arztNames',JSON.stringify(arztNamesManual));
+}
+// Inline-Edit: User trägt Name ein → wird sofort gespeichert + Tabelle re-rendert
+window.editArztName=function(key,inputEl){
+  const newName=(inputEl.value||'').trim();
+  saveArztName(key,newName);
+  renderZuweiserTable();
+};
+
+// Sammelt alle Verordnungen pro Arzt aus einer Datenquelle.
+// Aktuell nur ergoDetailData. Strukturiert so, dass weitere Quellen leicht ergänzbar sind.
+function getZuweiserData(source){
+  const arzte={};
+  const today=new Date();today.setHours(0,0,0,0);
+
+  // Helper: VO + Arzt-Info hinzufügen
+  function addVerordnung(arztKey,arztName,arztDetails,vo){
+    if(!arzte[arztKey]){
+      arzte[arztKey]={
+        key:arztKey,
+        name:arztName||'Unbekannt',
+        lanr:arztDetails.lanr||'',
+        bsnr:arztDetails.bsnr||'',
+        arztId:arztDetails.arztId||'',
+        verordnungen:[],
+        patientIds:new Set(),
+        diagnosegruppen:new Set(),
+        bereiche:new Set(),
+        blankoCount:0,
+        firstDate:null,
+        lastDate:null
+      };
+    }
+    const a=arzte[arztKey];
+    a.verordnungen.push(vo);
+    if(vo.patientId)a.patientIds.add(vo.patientId);
+    if(vo.diagnosegruppe)a.diagnosegruppen.add(vo.diagnosegruppe);
+    if(vo.bereich)a.bereiche.add(vo.bereich);
+    if(vo.isBlanko)a.blankoCount++;
+    if(vo.datum){
+      const d=new Date(vo.datum);
+      if(!a.firstDate||d<a.firstDate)a.firstDate=d;
+      if(!a.lastDate||d>a.lastDate)a.lastDate=d;
+    }
+  }
+
+  // ── ERGO-Datenquelle ──
+  if((source==='ergo'||source==='all')&&ergoDetailData&&Array.isArray(ergoDetailData)){
+    ergoDetailData.forEach(e=>{
+      const vo=e.Verordnung;if(!vo)return;
+      const det=vo.Details||{};
+      const lanr=det.LebenslangeArztnummer||'';
+      const arztId=det.ArztId||'';
+      const arztNameRaw=e.ReadOnlyInformation?.Arzt||'';
+      // Key bevorzugt LANR (eindeutig), fallback ArztId, fallback Name
+      const key=lanr||arztId||arztNameRaw||'unknown';
+      if(key==='unknown'&&!arztNameRaw)return; // keine Arzt-Info → skip
+      // Manuell gepflegter Name hat Vorrang
+      const arztName=arztNamesManual[key]?.name||arztNameRaw;
+      const pat=vo.Patient;
+      const heilmittel=(e.VerordneteHeilmittel||[]).map(hm=>hm.Bezeichnung||hm.Kurzbezeichnung).filter(Boolean);
+      const voEntry={
+        id:vo.Id,
+        bereich:'Ergo',
+        datum:det.Datum||null,
+        diagnosegruppe:det.Diagnosegruppe||'',
+        icd10:det.Icd10Code||det.BehandlungsrelevanteDiagnose||'',
+        beschreibung:heilmittel.join(', ')||'—',
+        heilmittel,
+        isBlanko:!!det.IsBlankoformular,
+        isReadOnly:!!vo.IsReadOnly,
+        patientId:pat?.Id||'',
+        patientName:pat?((pat.Nachname||'')+', '+(pat.Vorname||'')).trim():'',
+        patientGeb:pat?.Geburtsdatum||'',
+        patientOrt:pat?.Ort||''
+      };
+      addVerordnung(key,arztName,{lanr,bsnr:det.Betriebsstaettennummer||'',arztId},voEntry);
+    });
+  }
+
+  return Object.values(arzte);
+}
+
+function renderZuweiser(){
+  const el=document.getElementById('zuweiserContainer');if(!el)return;
+  let h='';
+  // Source-Tabs (aktuell nur Ergo aktiv)
+  h+='<div class="tabs" style="margin-bottom:12px">';
+  h+=`<button class="tab${zuweiserSource==='ergo'?' a':''}" onclick="switchZuweiser('ergo')">🧠 KIMOJO Ergo</button>`;
+  h+=`<button class="tab" style="opacity:0.45;cursor:not-allowed" title="Daten noch nicht verfügbar — Power Automate erweitern">💪 KIMOJO Physio (bald)</button>`;
+  h+=`<button class="tab" style="opacity:0.45;cursor:not-allowed" title="Daten noch nicht verfügbar — Power Automate erweitern">🏊 PhFiP (bald)</button>`;
+  h+=`<button class="tab" style="opacity:0.45;cursor:not-allowed" title="Sobald alle Quellen verfügbar sind">📋 Alle (bald)</button>`;
+  h+='</div>';
+  // Filter-Bar: Zeitraum + Sortierung
+  h+='<div class="flt">';
+  h+='<span class="fl">Zeitraum</span>';
+  [{f:'all',l:'Alle'},{f:'thisMonth',l:'Dieser Monat'},{f:'lastMonth',l:'Vormonat'},{f:'last3',l:'Letzte 3 Monate'}].forEach(x=>{
+    h+=`<button class="fb${zuweiserPeriod===x.f?' a':''}" onclick="setZuweiserPeriod('${x.f}',this)">${x.l}</button>`;
+  });
+  h+='<div class="sep"></div>';
+  h+='<span class="fl">Sortierung</span>';
+  [{f:'count',l:'Anzahl Rezepte'},{f:'patients',l:'Anzahl Patienten'},{f:'blanko',l:'Blanko-Quote'},{f:'name',l:'Name A-Z'}].forEach(x=>{
+    h+=`<button class="fb${zuweiserSort===x.f?' a':''}" onclick="setZuweiserSort('${x.f}',this)">${x.l}</button>`;
+  });
+  h+='</div>';
+  // Tabelle
+  h+='<div id="zuweiserTable"></div>';
+  el.innerHTML=h;
+  renderZuweiserTable();
+}
+
+function setZuweiserPeriod(p,el){zuweiserPeriod=p;document.querySelectorAll('#zuweiserContainer .flt .fb').forEach(b=>{if(['all','thisMonth','lastMonth','last3'].includes(b.getAttribute('onclick')?.match(/'(\w+)'/)?.[1]))b.classList.remove('a');});el.classList.add('a');renderZuweiserTable();}
+function setZuweiserSort(s,el){zuweiserSort=s;document.querySelectorAll('#zuweiserContainer .flt .fb').forEach(b=>{if(['count','patients','blanko','name'].includes(b.getAttribute('onclick')?.match(/'(\w+)'/)?.[1]))b.classList.remove('a');});el.classList.add('a');renderZuweiserTable();}
+function switchZuweiser(s){zuweiserSource=s;renderZuweiser();}
+
+function renderZuweiserTable(){
+  const el=document.getElementById('zuweiserTable');if(!el)return;
+  const allArzte=getZuweiserData(zuweiserSource);
+  // Zeitraum-Filter: filtere Verordnungen pro Arzt nach Datum
+  const now=new Date();const thisMonth=new Date(now.getFullYear(),now.getMonth(),1);
+  const lastMonth=new Date(now.getFullYear(),now.getMonth()-1,1);
+  const last3=new Date(now.getFullYear(),now.getMonth()-3,1);
+  const filtered=allArzte.map(a=>{
+    let vos=a.verordnungen;
+    if(zuweiserPeriod!=='all'){
+      vos=vos.filter(v=>{
+        if(!v.datum)return false;
+        const d=new Date(v.datum);
+        if(zuweiserPeriod==='thisMonth')return d>=thisMonth;
+        if(zuweiserPeriod==='lastMonth')return d>=lastMonth&&d<thisMonth;
+        if(zuweiserPeriod==='last3')return d>=last3;
+        return true;
+      });
+    }
+    // Recompute KPIs für gefilterten Zeitraum
+    const patientIds=new Set();const dgs=new Set();let blankoCnt=0;
+    vos.forEach(v=>{if(v.patientId)patientIds.add(v.patientId);if(v.diagnosegruppe)dgs.add(v.diagnosegruppe);if(v.isBlanko)blankoCnt++;});
+    return{...a,verordnungenFiltered:vos,countFiltered:vos.length,patientCountFiltered:patientIds.size,dgsFiltered:[...dgs],blankoFiltered:blankoCnt};
+  }).filter(a=>a.countFiltered>0);
+  // Sortieren
+  filtered.sort((a,b)=>{
+    if(zuweiserSort==='name')return a.name.localeCompare(b.name);
+    if(zuweiserSort==='patients')return b.patientCountFiltered-a.patientCountFiltered;
+    if(zuweiserSort==='blanko')return(b.blankoFiltered/b.countFiltered)-(a.blankoFiltered/a.countFiltered);
+    return b.countFiltered-a.countFiltered;
+  });
+  // Trend-Berechnung: Vergleich Verordnungen aktueller Monat vs Vormonat
+  filtered.forEach(a=>{
+    const cur=a.verordnungen.filter(v=>{if(!v.datum)return false;const d=new Date(v.datum);return d>=thisMonth;}).length;
+    const prev=a.verordnungen.filter(v=>{if(!v.datum)return false;const d=new Date(v.datum);return d>=lastMonth&&d<thisMonth;}).length;
+    a.trendCur=cur;a.trendPrev=prev;
+    a.trendDelta=prev>0?Math.round((cur-prev)/prev*100):(cur>0?100:0);
+  });
+  // KPIs gesamt
+  const totalArzte=filtered.length;
+  const totalRezepte=filtered.reduce((s,a)=>s+a.countFiltered,0);
+  const totalPatienten=new Set();filtered.forEach(a=>a.verordnungenFiltered.forEach(v=>{if(v.patientId)totalPatienten.add(v.patientId);}));
+  const blankoTotal=filtered.reduce((s,a)=>s+a.blankoFiltered,0);
+  const blankoQuote=totalRezepte>0?Math.round(blankoTotal/totalRezepte*100):0;
+  let h='';
+  h+='<div class="hero">';
+  h+='<div class="hk"><div class="hk-l">Aktive Zuweiser</div><div class="hk-v" style="color:var(--red)">'+totalArzte+'</div><div class="hk-sub">Ärzte mit Rezepten</div></div>';
+  h+='<div class="hk"><div class="hk-l">Rezepte gesamt</div><div class="hk-v">'+totalRezepte+'</div><div class="hk-sub">im Zeitraum</div></div>';
+  h+='<div class="hk"><div class="hk-l">Patienten gesamt</div><div class="hk-v" style="color:var(--teal)">'+totalPatienten.size+'</div><div class="hk-sub">unique</div></div>';
+  h+='<div class="hk"><div class="hk-l">Blanko-Quote</div><div class="hk-v" style="color:var(--purple)">'+blankoQuote+'%</div><div class="hk-sub">'+blankoTotal+' Blanko-VOs</div></div>';
+  h+='</div>';
+  // Top-3-Highlight (nur bei Sortierung nach count und mind. 3 Ärzten)
+  if(zuweiserSort==='count'&&filtered.length>=3){
+    h+='<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:18px">';
+    const podium=['🥇','🥈','🥉'];
+    filtered.slice(0,3).forEach((a,i)=>{
+      const trendIcon=a.trendDelta>0?'📈':a.trendDelta<0?'📉':'➡️';
+      const trendCol=a.trendDelta>0?'var(--teal)':a.trendDelta<0?'var(--red)':'var(--muted)';
+      h+=`<div style="background:linear-gradient(135deg,var(--card),#fafaf8);border:1.5px solid var(--border);border-radius:16px;padding:16px;cursor:pointer" onclick="showZuweiserDetail('${escA(a.key)}')">`;
+      h+=`<div style="font-size:24px;margin-bottom:4px">${podium[i]}</div>`;
+      h+=`<div style="font-family:Montserrat;font-size:14px;font-weight:800;line-height:1.2">${esc(a.name)}</div>`;
+      if(a.lanr)h+=`<div style="font-size:9px;color:var(--muted);margin-top:2px">LANR: ${esc(a.lanr)}</div>`;
+      h+=`<div style="display:flex;gap:10px;margin-top:10px;padding-top:10px;border-top:1px dashed var(--border)">`;
+      h+=`<div><div style="font-size:9px;color:var(--muted)">REZEPTE</div><div style="font-family:Montserrat;font-size:18px;font-weight:900">${a.countFiltered}</div></div>`;
+      h+=`<div><div style="font-size:9px;color:var(--muted)">PATIENTEN</div><div style="font-family:Montserrat;font-size:18px;font-weight:900">${a.patientCountFiltered}</div></div>`;
+      h+=`<div><div style="font-size:9px;color:var(--muted)">TREND</div><div style="font-family:Montserrat;font-size:13px;font-weight:800;color:${trendCol}">${trendIcon} ${a.trendDelta>0?'+':''}${a.trendDelta}%</div></div>`;
+      h+=`</div></div>`;
+    });
+    h+='</div>';
+  }
+  if(!filtered.length){
+    h+='<div class="tcx"><div class="wl-empty">Keine Daten im Zeitraum</div></div>';
+    el.innerHTML=h;return;
+  }
+  // Hauptliste
+  h+='<div class="tcx"><div class="thd"><h3>Alle Zuweiser</h3><span class="cnt">'+filtered.length+' Ärzte</span></div>';
+  h+='<table class="data-t"><thead><tr><th>#</th><th>Arzt</th><th>LANR</th><th class="r">Rezepte</th><th class="r">Patienten</th><th class="r">Blanko %</th><th class="r">Trend</th><th>Diagnosegruppen</th><th></th></tr></thead><tbody>';
+  filtered.forEach((a,i)=>{
+    const blPercent=a.countFiltered>0?Math.round(a.blankoFiltered/a.countFiltered*100):0;
+    const trendIcon=a.trendDelta>0?'📈':a.trendDelta<0?'📉':'➡️';
+    const trendCol=a.trendDelta>0?'var(--teal)':a.trendDelta<0?'var(--red)':'var(--muted)';
+    const dgBadges=a.dgsFiltered.slice(0,4).map(dg=>`<span class="pr-b c-blue">${esc(dg)}</span>`).join('');
+    const moreD=a.dgsFiltered.length>4?` <span style="font-size:9px;color:var(--muted)">+${a.dgsFiltered.length-4}</span>`:'';
+    // Unbekannte Ärzte: Inline-Edit-Feld + Google-Such-Button
+    const isUnknown=(a.name==='Unbekannt'||!a.name);
+    let arztCell;
+    if(isUnknown){
+      const googleQuery=encodeURIComponent('LANR '+a.lanr+(a.bsnr?' BSNR '+a.bsnr:'')+' Arzt');
+      arztCell=`<div onclick="event.stopPropagation()" style="display:flex;flex-direction:column;gap:3px">`;
+      arztCell+=`<input type="text" placeholder="Name eintragen..." onblur="editArztName('${escA(a.key)}',this)" onkeydown="if(event.key==='Enter')this.blur()" style="padding:4px 8px;border:1.5px solid var(--amber);border-radius:6px;font-size:11px;font-family:Poppins;outline:none;width:160px;background:var(--amber-bg)">`;
+      arztCell+=`<a href="https://www.google.com/search?q=${googleQuery}" target="_blank" rel="noopener" style="font-size:9px;color:var(--blue);text-decoration:none;font-family:Montserrat;font-weight:700">🔎 LANR googeln</a>`;
+      arztCell+=`</div>`;
+    }else{
+      // Bekannter Arzt: zeige Name, ggf. mit "manuell"-Badge wenn aus localStorage
+      const isManual=!!arztNamesManual[a.key];
+      arztCell=`<div class="pn">${esc(a.name)}${isManual?' <span style="font-size:8px;color:var(--teal);font-weight:600">●</span>':''}</div>`;
+    }
+    h+=`<tr style="cursor:pointer" onclick="showZuweiserDetail('${escA(a.key)}')">`;
+    h+=`<td><strong>${i+1}</strong></td>`;
+    h+=`<td>${arztCell}</td>`;
+    h+=`<td><span style="font-family:'SF Mono',Menlo,monospace;font-size:10px;color:var(--muted)">${esc(a.lanr||'—')}</span></td>`;
+    h+=`<td class="r"><strong>${a.countFiltered}</strong></td>`;
+    h+=`<td class="r">${a.patientCountFiltered}</td>`;
+    h+=`<td class="r"><span class="badge ${blPercent>=50?'b-amber':'b-teal'}" style="font-weight:600">${blPercent}%</span></td>`;
+    h+=`<td class="r" style="color:${trendCol};font-family:Montserrat;font-weight:700">${trendIcon} ${a.trendDelta>0?'+':''}${a.trendDelta}%</td>`;
+    h+=`<td><div class="pr-bs" style="max-width:200px;justify-content:flex-start">${dgBadges}${moreD}</div></td>`;
+    h+=`<td><button class="act">Details ▶</button></td>`;
+    h+=`</tr>`;
+  });
+  h+='</tbody></table></div>';
+  // Detail-Bereich (initial leer)
+  h+='<div id="zuweiserDetail"></div>';
+  el.innerHTML=h;
+}
+
+function showZuweiserDetail(arztKey){
+  const allArzte=getZuweiserData(zuweiserSource);
+  const arzt=allArzte.find(a=>a.key===arztKey);
+  const el=document.getElementById('zuweiserDetail');if(!el||!arzt)return;
+  // Zeitraum-Filter auch hier anwenden
+  const now=new Date();const thisMonth=new Date(now.getFullYear(),now.getMonth(),1);
+  const lastMonth=new Date(now.getFullYear(),now.getMonth()-1,1);
+  const last3=new Date(now.getFullYear(),now.getMonth()-3,1);
+  let vos=arzt.verordnungen;
+  if(zuweiserPeriod!=='all'){
+    vos=vos.filter(v=>{if(!v.datum)return false;const d=new Date(v.datum);
+      if(zuweiserPeriod==='thisMonth')return d>=thisMonth;
+      if(zuweiserPeriod==='lastMonth')return d>=lastMonth&&d<thisMonth;
+      if(zuweiserPeriod==='last3')return d>=last3;
+      return true;
+    });
+  }
+  // Sortiere VOs nach Datum desc
+  vos.sort((a,b)=>{const da=a.datum?new Date(a.datum):0;const db=b.datum?new Date(b.datum):0;return db-da;});
+  // Patienten-Aggregation
+  const byPatient={};
+  vos.forEach(v=>{
+    const pid=v.patientId||v.patientName;if(!pid)return;
+    if(!byPatient[pid])byPatient[pid]={name:v.patientName,geb:v.patientGeb,ort:v.patientOrt,verordnungen:[]};
+    byPatient[pid].verordnungen.push(v);
+  });
+  const patList=Object.values(byPatient).sort((a,b)=>b.verordnungen.length-a.verordnungen.length||a.name.localeCompare(b.name));
+  let h='';
+  h+='<div class="tcx" style="margin-top:18px;border-left:4px solid var(--red)">';
+  // Header: bei "Unbekannt" Inline-Edit anbieten
+  const isUnknown=(arzt.name==='Unbekannt'||!arzt.name);
+  if(isUnknown){
+    const googleQuery=encodeURIComponent('LANR '+arzt.lanr+(arzt.bsnr?' BSNR '+arzt.bsnr:'')+' Arzt');
+    h+='<div class="thd"><div style="display:flex;flex-direction:column;gap:4px">';
+    h+='<h3>🏥 Unbekannt — Name eintragen:</h3>';
+    h+=`<input type="text" placeholder="Arzt-Name..." onblur="editArztName('${escA(arzt.key)}',this);showZuweiserDetail('${escA(arzt.key)}')" onkeydown="if(event.key==='Enter')this.blur()" style="padding:8px 14px;border:2px solid var(--amber);border-radius:8px;font-size:14px;font-family:Poppins;outline:none;background:var(--amber-bg);max-width:340px">`;
+    h+=`<a href="https://www.google.com/search?q=${googleQuery}" target="_blank" rel="noopener" style="font-size:11px;color:var(--blue);text-decoration:none;font-family:Montserrat;font-weight:700">🔎 LANR + BSNR googeln</a>`;
+    h+='</div>';
+    h+='<button class="hdr-btn" onclick="document.getElementById(\'zuweiserDetail\').innerHTML=\'\'">✕ schließen</button></div>';
+  }else{
+    h+='<div class="thd"><h3>🏥 '+esc(arzt.name)+'</h3>';
+    h+='<button class="hdr-btn" onclick="document.getElementById(\'zuweiserDetail\').innerHTML=\'\'">✕ schließen</button></div>';
+  }
+  // Arzt-Stammdaten
+  h+='<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin-bottom:16px;padding:14px;background:var(--bg);border-radius:12px">';
+  h+='<div><div style="font-size:9px;color:var(--muted);font-family:Montserrat;font-weight:800;letter-spacing:1px">LANR</div><div style="font-family:\'SF Mono\',Menlo,monospace;font-size:13px;font-weight:600">'+esc(arzt.lanr||'—')+'</div></div>';
+  h+='<div><div style="font-size:9px;color:var(--muted);font-family:Montserrat;font-weight:800;letter-spacing:1px">BSNR</div><div style="font-family:\'SF Mono\',Menlo,monospace;font-size:13px;font-weight:600">'+esc(arzt.bsnr||'—')+'</div></div>';
+  h+='<div><div style="font-size:9px;color:var(--muted);font-family:Montserrat;font-weight:800;letter-spacing:1px">Patienten</div><div style="font-family:Montserrat;font-size:18px;font-weight:900">'+patList.length+'</div></div>';
+  h+='<div><div style="font-size:9px;color:var(--muted);font-family:Montserrat;font-weight:800;letter-spacing:1px">Rezepte</div><div style="font-family:Montserrat;font-size:18px;font-weight:900">'+vos.length+'</div></div>';
+  h+='</div>';
+  // Patient-Liste
+  h+='<h4 style="font-family:Montserrat;font-size:13px;font-weight:800;margin-bottom:8px">👥 Patienten und ihre Rezepte</h4>';
+  h+='<table class="data-t"><thead><tr><th>Patient</th><th class="r">Rezepte</th><th>Diagnosegruppen</th><th>Heilmittel</th><th>Letztes Rezept</th></tr></thead><tbody>';
+  patList.forEach(p=>{
+    const dgs=new Set();const hms=new Set();
+    p.verordnungen.forEach(v=>{if(v.diagnosegruppe)dgs.add(v.diagnosegruppe);v.heilmittel.forEach(hm=>hms.add(hm));});
+    const lastVo=p.verordnungen[0];
+    const fd=lastVo.datum?new Date(lastVo.datum).toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit',year:'2-digit'}):'—';
+    h+='<tr><td><div class="pn">'+esc(p.name)+'</div>';
+    if(p.geb){const geb=new Date(p.geb).toLocaleDateString('de-DE');h+='<div class="th-sub">geb. '+geb+(p.ort?' · '+esc(p.ort):'')+'</div>';}
+    h+='</td>';
+    h+='<td class="r"><strong>'+p.verordnungen.length+'</strong></td>';
+    h+='<td><div class="pr-bs" style="justify-content:flex-start;max-width:160px">'+[...dgs].map(d=>`<span class="pr-b c-blue">${esc(d)}</span>`).join('')+'</div></td>';
+    h+='<td style="font-size:10px;max-width:200px">'+esc([...hms].slice(0,3).join(', '))+(hms.size>3?` +${hms.size-3}`:'')+'</td>';
+    h+='<td style="font-size:10px">'+fd+(lastVo.isBlanko?' <span class="pr-b c-purple">Blanko</span>':'')+'</td>';
+    h+='</tr>';
+  });
+  h+='</tbody></table>';
+  h+='</div>';
+  el.innerHTML=h;
+  el.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function renderLocTabsCtrl(){
+  let h='';LOCS.forEach(l=>{h+=`<button class="tab${curLoc===l.id?' a':''}" onclick="switchLocCtrl('${l.id}')">${l.label}</button>`;});
+  document.getElementById('locTabsCtrl').innerHTML=h;
+}
+function switchLocCtrl(loc){curLoc=loc;curSub='heute';renderLocTabsCtrl();renderSubTabsCtrl();renderTherapeutenCtrl();}
+function renderSubTabsCtrl(){
+  const loc=LOCS.find(l=>l.id===curLoc);if(!loc)return;
+  const dd=DATA[loc.suf];let h='';
+  ['heute','morgen'].forEach(d=>{
+    let badge='—',bg='var(--muted)';
+    if(dd&&dd[d].tp&&dd[d].tp.length){
+      const filtered=filterTP(dd[d].tp,dd[d].az,loc.filter);
+      const info=analyzeDay(filtered.tp,filtered.az);
+      badge=info.aA+'%';bg=info.aA>=90?'var(--teal)':info.aA>=80?'var(--amber)':'var(--red)';
+    }
+    h+=`<button class="stab${curSub===d?' a':''}" onclick="curSub='${d}';renderSubTabsCtrl();renderTherapeutenCtrl()">📅 ${d==='heute'?'Heute':getMorgenLabel()} <span class="stab-badge" style="background:${bg}">${badge}</span></button>`;
+  });
+  document.getElementById('subTabsCtrl').innerHTML=h;
+}
+function renderTherapeutenCtrl(){
+  const loc=LOCS.find(l=>l.id===curLoc);if(!loc){document.getElementById('therapeutenCtrl').innerHTML='';return;}
+  const dd=DATA[loc.suf];if(!dd){document.getElementById('therapeutenCtrl').innerHTML='';return;}
+  const dayData=dd[curSub];
+  const filtered=filterTP(dayData.tp,dayData.az,loc.filter);
+  if(!filtered.tp||!filtered.tp.length){document.getElementById('therapeutenCtrl').innerHTML='<div style="text-align:center;padding:30px;color:var(--muted)">Keine Daten</div>';return;}
+  const I=analyzeDay(filtered.tp,filtered.az);const{act,absent}=I;
+  let h='<div class="tg">';
+  act.forEach(t=>{
+    const hg=t.gt>0,cls=hg?'hg':'fu',bc=hg?'bg':'bf',bt=hg?Math.round(t.gt)+'min':'Voll ✓';
+    const st2=fmt(t.ds),en=fmt(t.de),auC=t.au>=90?'var(--teal)':t.au>=80?'var(--amber)':'var(--red)';
+    const azStr=t.azB.map(b=>fmt(b[0])+'-'+fmt(b[1])).join(' + ');
+    h+=`<div class="tc-card ${cls}"><div class="tt"><span class="tn">${t.name}</span><span class="tb ${bc}">${bt}</span></div>`;
+    h+=`<div class="tm"><span>🕐 <b>${azStr||st2+'-'+en}</b></span><span>👤 <b>${t.pc}</b></span><span>📊 <b style="color:${auC}">${t.au}%</b></span></div>`;
+    const tSpan=(t.de-t.ds)/6e4||1;h+=`<div class="tw"><div class="tb2">`;
+    const ev=[];t.azB.forEach(b=>{ev.push({s:b[0],e:b[1],t:'w'});});for(let i=0;i<t.azB.length-1;i++)ev.push({s:t.azB[i][1],e:t.azB[i+1][0],t:'p'});
+    if(t.azB.length&&t.ds<t.azB[0][0])ev.push({s:t.ds,e:t.azB[0][0],t:'o'});if(t.azB.length&&t.de>t.azB[t.azB.length-1][1])ev.push({s:t.azB[t.azB.length-1][1],e:t.de,t:'o'});
+    ev.sort((a,b)=>a.s-b.s);ev.forEach(v=>{const d=(v.e-v.s)/6e4,w=(d/tSpan*100).toFixed(2);
+      if(v.t==='p')h+=`<div class="ts sps" style="width:${w}%"></div>`;
+      else if(v.t==='o')h+=`<div class="ts so" style="width:${w}%"></div>`;
+      else{let c=new Date(v.s);const ss=[];t.am.forEach(([aS,aE])=>{if(aE<=v.s||aS>=v.e)return;const cs=new Date(Math.max(aS,v.s)),ce=new Date(Math.min(aE,v.e));if(cs>c)ss.push({d:(cs-c)/6e4,t:'g'});ss.push({d:(ce-cs)/6e4,t:'p'});c=new Date(Math.max(c,ce));});if(c<v.e)ss.push({d:(v.e-c)/6e4,t:'g'});if(!ss.length)ss.push({d:(v.e-v.s)/6e4,t:'g'});ss.forEach(x=>{const sw=(x.d/tSpan*100).toFixed(2);h+=`<div class="ts ${x.t==='p'?'sp':'sg2'}" style="width:${sw}%"></div>`;});}
+    });h+=`</div><div class="tll"><span>${st2}</span><span>${en}</span></div></div>`;
+    if(t.gaps.length){h+=`<div class="gl">`;t.gaps.forEach(g=>{h+=`<div class="gr"><span class="gt">${fmt(g.start)}–${fmt(g.end)}</span><span class="gp">${Math.round(g.min)}min</span><span class="gn">${Math.floor(g.min/20)}×</span></div>`;});h+=`</div>`;}
+    h+=`<div class="aw"><div class="ab"><div class="af" style="width:${t.au}%;background:${auC}"></div></div><div class="ai"><span>${Math.round(t.wm)}min AZ</span><span style="color:${auC};font-weight:800">${t.au}%</span></div></div></div>`;
+  });
+  absent.forEach(a=>{h+=`<div class="tc-card of"><div class="tt"><span class="tn">${a.name}</span><span class="tb ba">🏖 ${a.reason}</span></div></div>`;});
+  h+='</div>';
+  document.getElementById('therapeutenCtrl').innerHTML=h;
+}
+
+// ═══════════════════════════════════════════════════════════
+// TAGES-BRIEFING (Loc tabs + day view) — To-Do's
+// ═══════════════════════════════════════════════════════════
+function renderLocTabs(){
+  let h='';LOCS.forEach(l=>{h+=`<button class="tab${curLoc===l.id?' a':''}" onclick="switchLoc('${l.id}')">${l.label}</button>`;});
+  h+=`<button class="tab${curLoc==='checker'?' a':''}" onclick="switchLoc('checker')">🔍 Checker</button>`;
+  document.getElementById('locTabs').innerHTML=h;
+}
+
+function switchLoc(loc){
+  curLoc=loc;curSub='heute';renderLocTabs();
+  if(loc==='checker'){document.getElementById('subTabs').innerHTML='';renderChecker();return;}
+  renderSubTabs();renderDayView();
+}
+
+function renderSubTabs(){
+  if(curLoc==='checker'){document.getElementById('subTabs').innerHTML='';return;}
+  const loc=LOCS.find(l=>l.id===curLoc);if(!loc)return;
+  const dd=DATA[loc.suf];let h='';
+  ['heute','morgen'].forEach(d=>{
+    let badge='—',bg='var(--muted)';
+    if(dd&&dd[d].tp&&dd[d].tp.length){
+      const filtered=filterTP(dd[d].tp,dd[d].az,loc.filter);
+      const info=analyzeDay(filtered.tp,filtered.az);
+      badge=info.tgm>0?Math.round(info.tgm)+'min':'✓ Voll';bg=info.tgm>30?'var(--red)':'var(--teal)';
+    }
+    h+=`<button class="stab${curSub===d?' a':''}" onclick="curSub='${d}';renderSubTabs();renderDayView()">📅 ${d==='heute'?'Heute':getMorgenLabel()} <span class="stab-badge" style="background:${bg}">${badge}</span></button>`;
+  });
+  document.getElementById('subTabs').innerHTML=h;
+}
+
+function filterTP(tp,az,filter){
+  if(!filter)return{tp:tp||[],az:az||[]};
+  const isErgo=filter==='ergo';
+  const filteredTP=(tp||[]).filter(t=>(t.Mitarbeiter||[]).some(m=>{const nn=(m.Nachname||'').toLowerCase();return isErgo?nn.includes('ergo'):nn.includes('physio');}));
+  const filteredAZ=(az||[]).filter(a=>{const nn=(a.Nachname||'').toLowerCase();return isErgo?nn.includes('ergo'):nn.includes('physio');});
+  return{tp:filteredTP,az:filteredAZ};
+}
+
+function renderDayView(){
+  if(curLoc==='checker'){renderChecker();return;}
+  const loc=LOCS.find(l=>l.id===curLoc);if(!loc)return;
+  const dd=DATA[loc.suf];if(!dd){document.getElementById('dayBriefing').innerHTML='';return;}
+  const dayData=dd[curSub];
+  const filtered=filterTP(dayData.tp,dayData.az,loc.filter);
+  const rcs=RCS[curLoc];RC=rcs?(rcs[curSub]||rcs.heute):null;
+  renderDay(filtered,curSub,loc.label);
+}
+
+function renderDay(dd,day,locLabel){
+  const el=document.getElementById('dayBriefing');if(!el)return;
+  if(!dd.tp||!dd.tp.length){el.innerHTML='<div style="text-align:center;padding:40px;color:var(--muted)">Keine Daten für '+locLabel+'</div>';return;}
+  const I=analyzeDay(dd.tp,dd.az);const{act,tgm,tp2,aA,twg,ps,ds}=I;
+  const dl=day==='heute'?'Heute':getMorgenLabel();
+  let h=`<div class="summary"><h2>${locLabel} · ${dl} · ${ds}</h2><div class="sg"><div class="si"><div class="si-l">Echte Lücken</div><div class="si-v">${Math.round(tgm)} min</div><div class="si-s">${ps} Termine möglich</div></div><div class="si"><div class="si-l">Termine</div><div class="si-v">${tp2}</div><div class="si-s">${act.length} Therapeuten</div></div><div class="si"><div class="si-l">ø Auslastung</div><div class="si-v">${aA}%</div><div class="si-s">Patientenzeit ÷ AZ</div></div><div class="si"><div class="si-l">Handlungsbedarf</div><div class="si-v">${twg}</div><div class="si-s">mit Lücken ≥${MG}min</div></div></div></div>`;
+  if(tgm>0){h+=`<div class="st">⚡ Lücken</div>`;act.filter(t=>t.gt>0).forEach(t=>{t.gaps.forEach(g=>{const sl=Math.floor(g.min/20),ic=g.min>=60?'🔴':g.min>=40?'🟡':'🟢';const gs=g.start.toISOString();h+=`<div class="ac"><span style="font-size:16px">${ic}</span><div class="ac-b"><div class="ac-t">${t.name} — ${Math.round(g.min)} min</div><div class="ac-s">${fmt(g.start)} – ${fmt(g.end)} · ${sl} Slot${sl>1?'s':''}</div></div><span class="ac-p" style="cursor:pointer" onclick="showGapNR(${Math.round(g.min)},this,'${t.name.replace(/'/g,"\\'")}','${gs}')" title="Nachrücker anzeigen">🔥 ${sl}×</span></div>`;});});h+=`<div id="gapNR"></div>`;}
+  else h+=`<div style="background:var(--teal-bg);border-radius:16px;padding:18px;text-align:center;margin-bottom:16px"><span style="font-size:20px">✅</span><div style="font-family:Montserrat;font-size:14px;font-weight:800;color:var(--teal);margin-top:4px">Voll ausgelastet!</div></div>`;
+  // Rezepte inline
+  if(RC){
+    h+=`<div class="st">💊 Rezepte · Offene Handlungen</div>`;
+    h+=`<div id="rezeptContainer"></div>`;
+  }
+  el.innerHTML=h;
+  if(RC)renderRezeptInline();
+}
+
+function renderRezeptInline(){
+  if(!RC){document.getElementById('rezeptContainer').innerHTML='';return;}
+  const c=RC;
+  let h='<div style="margin-bottom:12px"><input type="text" id="rzSearch" placeholder="🔍 Patient suchen..." oninput="filterRezeptSearch()" style="width:100%;padding:10px 16px;border:1.5px solid var(--border);border-radius:100px;font-size:13px;font-family:Poppins;outline:none;background:var(--card);color:var(--dark)" /></div>';
+  h+='<div class="rkpis">';
+  const kpis=[{k:'nr',l:'🔥 Nachrücker',v:c.nr.length,co:'var(--fire)',s:'einplanbar'},{k:'bvb',l:'🏥 BVB/LVB',v:c.bvb.length,co:'var(--green)',s:'nicht im Budget'},{k:'blanko',l:'💊 Blanko',v:c.blanko.length,co:'var(--purple)',s:'16 Wo'},{k:'folge',l:'🔴 Folge',v:c.folge.length,co:'var(--red)',s:'≤2 übrig'},{k:'reserv',l:'⚠️ Ohne VO',v:c.reserv.length,co:'var(--amber)',s:'kein Rezept'},{k:'freq',l:'📈 Freq↑',v:c.freq.length,co:'var(--blue)',s:'erhöhbar'},{k:'all',l:'📋 Alle',v:c.bvb.length+c.blanko.length+c.folge.length+c.reserv.length+c.freq.length,co:'var(--dark)',s:'gesamt'}];
+  const loc=LOCS.find(l=>l.id===curLoc);
+  if(loc&&loc.bereich===1&&ergoDetailData){const ep=getErgoPatients();kpis.push({k:'patienten',l:'👥 Patienten',v:ep.length,co:'var(--teal)',s:'in Behandlung'});}
+  kpis.forEach(x=>{h+=`<div class="rkpi" id="rk-${x.k}" onclick="showRD('${x.k}')"><div class="rkpi-l">${x.l}</div><div class="rkpi-v" style="color:${x.co}">${x.v}</div><div class="rkpi-s">${x.s}</div></div>`;});
+  h+='</div><div id="rd"></div>';
+  document.getElementById('rezeptContainer').innerHTML=h;
+}
+
+function filterRezeptSearch(){
+  const q=(document.getElementById('rzSearch')?.value||'').toLowerCase().trim();
+  document.querySelectorAll('#rd .pr').forEach(r=>{
+    const name=(r.querySelector('.pr-n')?.textContent||'').toLowerCase();
+    r.style.display=!q||name.includes(q)?'':'none';
+  });
+}
+
+// ═══════════════════════════════════════════════════════════
+// DAY ANALYSIS (Tages-Briefing)
+// ═══════════════════════════════════════════════════════════
+function mergeR(ranges){if(!ranges.length)return[];ranges.sort((a,b)=>a[0]-b[0]);const m=[[ranges[0][0],ranges[0][1]]];for(let i=1;i<ranges.length;i++){const l=m[m.length-1];if(ranges[i][0]<=l[1]){if(ranges[i][1]>l[1])l[1]=ranges[i][1];}else m.push([ranges[i][0],ranges[i][1]]);}return m;}
+function rSum(m){return m.reduce((s,r)=>(r[1]-r[0])/6e4+s,0);}
+function pTime(ds,ts){const d=new Date(ds+'T'+ts);if(isNaN(d)){const p=ts.split(':');return new Date(new Date(ds).setHours(+p[0],+p[1],p[2]?+p[2]:0));}return d;}
+
+function analyzeDay(tp,az){
+  if(!tp||!tp.length)return{act:[],absent:[],tgm:0,tp2:0,aA:0,twg:0,ps:0,ds:'Keine Daten'};
+  const ds=tp[0].Beginn.slice(0,10);const dd=new Date(ds+'T12:00:00').toLocaleDateString('de-DE',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  // Schutz: wenn AZ-Datei ein anderes Datum hat (z.B. Samstag statt Montag am Freitag),
+  // ist sie unbrauchbar → ignorieren und Arbeitszeiten aus TP ableiten
+  let azValid=az;
+  if(az&&az.length&&az[0].OnDay&&az[0].OnDay!==ds){
+    console.warn(`AZ-Datum (${az[0].OnDay}) stimmt nicht mit TP-Datum (${ds}) überein — AZ wird ignoriert`);
+    azValid=null;
+  }
+  const azById={};if(azValid)azValid.forEach(a=>{azById[a.Id]={az:a.Arbeitszeiten||[],absent:a.IstAbwesend,label:a.Abwesenheitsbezeichnung};});
+  const IGNORE=['Christine Franz'];
+  const T={};tp.forEach(t=>{(t.Mitarbeiter||[]).forEach(m=>{const id=m.Id,vn=(m.Vorname||'').trim(),nn=(m.Nachname||'').trim();if(!vn)return;if(IGNORE.some(n=>n.toLowerCase()===(vn+' '+nn.replace(/\s*\(.*?\)\s*/g,'').trim()).toLowerCase()))return;if(!T[id])T[id]={vn,nn,dn:vn+' '+nn.replace(/\s*\(.*?\)\s*/g,'').trim(),ar:[],pc:0};T[id].ar.push([new Date(t.Beginn),new Date(t.Ende)]);if(t.PatientId||t.Art===1||t.Art===4)T[id].pc++;});});
+  const res=[],absent=[];
+  Object.entries(T).forEach(([id,th])=>{
+    const ai=azById[id];if(ai&&ai.absent){absent.push({name:th.dn,reason:ai.label||'Abwesend'});return;}
+    const azB=[];if(ai&&ai.az.length){ai.az.forEach(a=>{const s=pTime(ds,a.Start),e=pTime(ds,a.Ende);if(!isNaN(s)&&!isNaN(e))azB.push([s,e]);});azB.sort((a,b)=>a[0]-b[0]);}
+    if(!azB.length&&!th.ar.length)return;
+    const am=th.ar.length?mergeR(th.ar.map(r=>[new Date(r[0]),new Date(r[1])])):[];
+    const gaps=[];let gt=0,twm=rSum(azB),pm=0;
+    if(azB.length){
+      azB.forEach(([s,e])=>{let c=s;am.forEach(([aS,aE])=>{if(aE<=s||aS>=e)return;const cs=new Date(Math.max(aS,s)),ce=new Date(Math.min(aE,e));if(cs>c){const g=(cs-c)/6e4;if(g>=MG){gaps.push({start:c,end:cs,min:g});gt+=g;}}c=new Date(Math.max(c,ce));});if(c<e){const g=(e-c)/6e4;if(g>=MG){gaps.push({start:c,end:e,min:g});gt+=g;}}});
+      const pr=[];tp.forEach(t=>{if(!(t.Mitarbeiter||[]).some(m=>m.Id===id))return;if(t.PatientId||t.Art===1||t.Art===4)pr.push([new Date(t.Beginn),new Date(t.Ende)]);});const pM=pr.length?mergeR(pr):[];azB.forEach(([s,e])=>{pM.forEach(([pS,pE])=>{const os=Math.max(s,pS),oe=Math.min(e,pE);if(oe>os)pm+=(oe-os)/6e4;});});
+    }else{
+      // Fallback: keine AZ verfügbar → Schicht aus Terminen ableiten
+      if(th.pc===0)return;
+      if(am.length){
+        // Schicht = erster Termin-Start bis letzter Termin-Ende
+        const shiftStart=am[0][0],shiftEnd=am[am.length-1][1];
+        // Lücken innerhalb der Schicht finden (zwischen den Terminen)
+        let c=shiftStart;
+        am.forEach(([aS,aE])=>{
+          if(aS>c){const g=(aS-c)/6e4;if(g>=MG){gaps.push({start:c,end:aS,min:g});gt+=g;}}
+          if(aE>c)c=aE;
+        });
+        twm=(shiftEnd-shiftStart)/6e4;
+        pm=rSum(am);
+      }
+    }
+    const au=twm>0?Math.min(100,Math.round(pm/twm*100)):(th.pc>0?100:0);
+    const dS=azB.length?azB[0][0]:(am.length?am[0][0]:null),dE=azB.length?azB[azB.length-1][1]:(am.length?am[am.length-1][1]:null);
+    if(!dS)return;res.push({name:th.dn,ds:dS,de:dE,wm:twm,pm,pc:th.pc,au,gaps,gt,azB,am});
+  });
+  res.sort((a,b)=>b.gt-a.gt);
+  return{act:res,absent,tgm:res.reduce((s,t)=>s+t.gt,0),tp2:res.reduce((s,t)=>s+t.pc,0),aA:res.length?Math.round(res.reduce((s,t)=>s+t.au,0)/res.length):0,twg:res.filter(t=>t.gt>0).length,ps:Math.floor(res.reduce((s,t)=>s+t.gt,0)/20),ds:dd};
+}
+
+// ═══════════════════════════════════════════════════════════
+// REZEPT ANALYSIS
+// ═══════════════════════════════════════════════════════════
+const BVB_LVB={'G10':{t:'LVB',n:'Chorea Huntington',vo:'dauerhaft'},'G11':{t:'LVB',n:'Hereditäre Ataxie',vo:'dauerhaft'},'G12':{t:'LVB',n:'Spinale Muskelatrophie/ALS',vo:'dauerhaft'},'G14':{t:'LVB',n:'Postpoliosyndrom',vo:'dauerhaft'},'G20.1':{t:'LVB',n:'Parkinson St.3-4',vo:'dauerhaft'},'G20.2':{t:'LVB',n:'Parkinson St.5',vo:'dauerhaft'},'G24.3':{t:'BVB',n:'Torticollis spasticus',vo:'12 Wochen'},'G35':{t:'LVB',n:'Multiple Sklerose',vo:'dauerhaft'},'G36':{t:'LVB',n:'Demyelinisation',vo:'dauerhaft'},'G37':{t:'LVB',n:'Demyelinisierende Krankheit',vo:'dauerhaft'},'G60.0':{t:'LVB',n:'Hereditäre Neuropathie',vo:'dauerhaft'},'G61.0':{t:'BVB',n:'Guillain-Barré',vo:'12 Wochen'},'G61.8':{t:'BVB',n:'CIDP',vo:'12 Wochen'},'G70.0':{t:'LVB',n:'Myasthenia gravis',vo:'dauerhaft'},'G71.0':{t:'LVB',n:'Muskeldystrophie',vo:'dauerhaft'},'G80':{t:'LVB',n:'Infantile Zerebralparese',vo:'dauerhaft'},'G81':{t:'LVB',n:'Hemiparese/Hemiplegie',vo:'dauerhaft'},'G82':{t:'LVB',n:'Para-/Tetraplegie',vo:'dauerhaft'},'G91.2':{t:'LVB',n:'Normaldruckhydrozephalus',vo:'dauerhaft'},'G93.1':{t:'LVB',n:'Anoxische Hirnschädigung',vo:'dauerhaft'},'G93.80':{t:'LVB',n:'Apallisches Syndrom',vo:'dauerhaft'},'G95.0':{t:'LVB',n:'Syringomyelie',vo:'dauerhaft'},'I60':{t:'BVB',n:'Subarachnoidalblutung',h:'1J',vo:'12 Wochen'},'I61':{t:'BVB',n:'Intrazerebrale Blutung',h:'1J',vo:'12 Wochen'},'I63':{t:'BVB',n:'Hirninfarkt',h:'1J',vo:'12 Wochen'},'I64':{t:'BVB',n:'Schlaganfall',h:'1J',vo:'12 Wochen'},'I69':{t:'BVB',n:'Folgen zerebrovask. Krankheit',h:'1J',vo:'12 Wochen'},'M45':{t:'LVB',n:'Spondylitis ankylosans',vo:'dauerhaft'},'M05':{t:'BVB',n:'Seropositive RA',vo:'12 Wochen'},'M06':{t:'BVB',n:'Rheumatoide Arthritis',vo:'12 Wochen'},'I89.02':{t:'BVB',n:'Lymphödem Stadium II',vo:'12 Wochen'},'I89.03':{t:'BVB',n:'Lymphödem Stadium III',vo:'12 Wochen'},'I89.01':{t:'KEIN',n:'Lymphödem Stadium I — KEIN BVB'},'I89.09':{t:'BVB',n:'Lymphödem (Stadium prüfen!)',vo:'12 Wochen',h:'Stadium spezifizieren'},'U09.9':{t:'BVB',n:'Post-COVID',h:'zeitlich begrenzt',vo:'12 Wochen'},'Z98.88':{t:'BVB',n:'Z.n. OP Skelett',h:'6 Monate',vo:'12 Wochen'}};
+function isBP(c){if(!c)return false;return c.startsWith('M75')||c.startsWith('S42')||c.startsWith('S43')||c.startsWith('S46')||c.startsWith('T92')||['M19.01','M19.11','M19.21','M19.91'].includes(c);}
+function isPO(c){return c&&(c.startsWith('Z98')||c.startsWith('Z96'));}
+function fBVB(c){if(!c)return null;if(BVB_LVB[c])return BVB_LVB[c];const x=c.replace(/-$/,'');if(BVB_LVB[x])return BVB_LVB[x];const p=x.split('.');if(p.length>=2){const k=p[0]+'.'+p[1].charAt(0);if(BVB_LVB[k])return BVB_LVB[k];}if(BVB_LVB[p[0]])return BVB_LVB[p[0]];return null;}
+function aFreq(t){if(!t||t.length<3)return null;const d=t.map(x=>new Date(x.Datum)).sort((a,b)=>a-b);const iv=[];for(let i=1;i<d.length;i++){const df=Math.round((d[i]-d[i-1])/864e5);if(df>0)iv.push(df);}if(!iv.length)return null;const a=iv.reduce((s,v)=>s+v,0)/iv.length;return{avg:Math.round(a),pw:Math.round(7/a*10)/10};}
+function hMHM(act){const ty=new Set();act.forEach(v=>{const b=v.Beschreibung||'';if(b.match(/Krankengymnastik|KG/i))ty.add('KG');if(b.match(/MLD|Lymphdrainage/i))ty.add('MLD');if(b.match(/Manuelle Therapie|MT/i))ty.add('MT');if(b.match(/KGG|Gerätegestützte/i))ty.add('KGG');});return ty.size>=2?[...ty]:null;}
+function buildErgoDGMap(ergoDet){const m={};if(!ergoDet||!Array.isArray(ergoDet))return m;ergoDet.forEach(e=>{const vo=e.Verordnung;if(!vo||!vo.Id||!vo.Details)return;const dg=vo.Details.Diagnosegruppe;if(dg)m[vo.Id]=dg;});return m;}
+
+const HM_DAUER={'KG':20,'KG - Einzelbehandlung':20,'KG-Atemtherapie':20,'MT':20,'MT - Einzel':20,'Manuelle Therapie':20,'MLD-30':30,'MLD':30,' MLD 30':30,'MLD-45':40,'MLD-60':60,'KGG':60,'KG-Gerät':60,'KG-ZNS (PNF)':30,'KG-ZNS (Bobath)':30,'Wärme':10,'Warmpackungen':10,'Traktion':10,'Motorisch-funkt. Beh.':30,'Motorisch-funkt. Beh., 2 ZI':60,'Motorisch-funkt. Beh., 4 ZI':60,'Sensomotorisch-perz. Beh.':45,'Psychisch-funkt. Beh.':60,'Psychisch-funkt. Beh., 2 ZI':60,'Psychisch-funkt. Beh., 3 ZI':60,'HLT/neuropsychologisch':30,'HLT/neuropsychologisch, 2 ZI':30,'HLT/neuropsychologisch, 4 ZI':60,'Blankoverordnung':60};
+function getHMDauer(bez){if(!bez)return 20;if(HM_DAUER[bez])return HM_DAUER[bez];const bl=bez.toLowerCase();if(bl.includes('mld')&&bl.includes('60'))return 60;if(bl.includes('mld')&&bl.includes('45'))return 40;if(bl.includes('mld')&&bl.includes('30'))return 30;if(bl.includes('mld'))return 30;if(bl.includes('kgg')||bl.includes('gerät'))return 60;if(bl.includes('sensomotorisch'))return 45;if(bl.includes('psychisch'))return 60;if(bl.includes('motorisch-funkt'))return 30;if(bl.includes('hlt')||bl.includes('hirnleistung'))return 30;if(bl.includes('mt')||bl.includes('manuelle'))return 20;if(bl.includes('kg'))return 20;if(bl.includes('wärme')||bl.includes('warm')||bl.includes('traktion'))return 10;return 20;}
+function analyzeTimePattern(termine){if(!termine||termine.length<2)return null;let vm=0,nm=0;termine.forEach(t=>{const d=new Date(t.Datum||t.beginn||t);const h=d.getHours();if(h<12)vm++;else nm++;});const total=vm+nm;if(total<2)return null;if(vm/total>=0.7)return'vm';if(nm/total>=0.7)return'nm';return null;}
+
+function showGapNR(gapMin,btn,thName,gapStart){
+  const el=document.getElementById('gapNR');if(!el)return;
+  document.querySelectorAll('.ac-p').forEach(b=>b.style.background='');
+  btn.style.background='var(--fire-bg)';
+  if(!RC||!RC.nr.length){el.innerHTML='<div style="padding:12px;color:var(--muted);font-size:11px">Keine Nachrücker verfügbar</div>';return;}
+  const gapH=gapStart?new Date(gapStart).getHours():12;const isVM=gapH<12;
+  // Tracking für Transparenz: warum wurde ein Patient ausgefiltert?
+  let rejectedFreq=0,rejectedTherapeut=0;
+  const scored=RC.nr.map(it=>{
+    let bonus=0;const hints=[];
+    const dauer=it._hmDauer||20;
+    if(dauer>gapMin){return{...it,_gapScore:-1,_hints:['⛔ '+dauer+'min passt nicht'],_rejectReason:'dauer'};}
+    if(dauer<=gapMin)hints.push('✓ '+dauer+'min');
+    // HARD-FILTER 1: Frequenz ≥ 2/Woche → Patient kommt schon oft genug, nicht mehr vorschlagen
+    if(it._freqPerWeek&&it._freqPerWeek>=2){rejectedFreq++;return{...it,_gapScore:-2,_hints:['📈 Kommt schon '+it._freqPerWeek+'x/Wo'],_rejectReason:'freq'};}
+    // HARD-FILTER 2: Stammtherapeut-Check — Patient muss diesen Therapeut schonmal gehabt haben
+    // Robustes Token-Matching: ignoriert Reihenfolge ("Nüßlein, Vanessa" vs "Vanessa Nüßlein"),
+    // Klammern-Suffixe ("(Physio - PhFiP)") und Komma-Trennung.
+    // Match wenn ALLE relevanten Tokens des kürzeren Namens im längeren vorkommen.
+    if(thName&&it._thHistory&&it._thHistory.length){
+      const tokenize=s=>String(s||'').toLowerCase()
+        .replace(/\(.*?\)/g,'')         // Klammer-Inhalte raus: (Physio - #2)
+        .replace(/[,]/g,' ')            // Kommas zu Leerzeichen
+        .split(/\s+/)                   // Split auf Whitespace
+        .map(t=>t.trim())
+        .filter(t=>t.length>=2);        // Mind. 2 Zeichen, ignoriere leer/Müll
+      const thTokens=tokenize(thName);
+      const match=it._thHistory.some(n=>{
+        const nTokens=tokenize(n);
+        if(!thTokens.length||!nTokens.length)return false;
+        // Mindestens 2 Tokens müssen matchen (typisch Vor- + Nachname)
+        // ODER bei kurzen Namen (1 Token): mindestens 1 muss matchen
+        const matched=thTokens.filter(t=>nTokens.includes(t)).length;
+        const minRequired=Math.min(2,Math.min(thTokens.length,nTokens.length));
+        return matched>=minRequired;
+      });
+      if(!match){rejectedTherapeut++;return{...it,_gapScore:-3,_hints:['👤 Kein Bezug zu '+thName],_rejectReason:'therapeut'};}
+      bonus+=2;hints.push('👤 Stammtherapeut');
+    }else if(thName){
+      // Keine Therapeut-Historie bekannt → sicherheitshalber raus (kein "Neuer Therapeut")
+      rejectedTherapeut++;return{...it,_gapScore:-3,_hints:['👤 Keine Historie mit '+thName],_rejectReason:'therapeut'};
+    }
+    if(it._timePat){if(it._timePat==='vm'&&isVM){bonus+=1;hints.push('🕐 VM-Patient');}else if(it._timePat==='nm'&&!isVM){bonus+=1;hints.push('🕐 NM-Patient');}else if(it._timePat==='vm'&&!isVM){bonus-=1;hints.push('⚠ eher VM');}else if(it._timePat==='nm'&&isVM){bonus-=1;hints.push('⚠ eher NM');}}
+    return{...it,_gapScore:it.score+bonus,_hints:hints};
+  });
+  const fits=scored.filter(x=>x._gapScore>=0).sort((a,b)=>b._gapScore-a._gapScore);
+  const noFit=scored.filter(x=>x._gapScore<0);
+  const top=fits.slice(0,10);
+  let h=`<div style="margin-top:8px;padding:14px;background:var(--fire-bg);border-radius:16px;border:1px solid rgba(239,68,68,.15)">`;
+  h+=`<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px"><span style="font-family:Montserrat;font-size:12px;font-weight:800;color:var(--fire)">🔥 Top Nachrücker für ${gapMin}min ${thName?'bei '+thName:''}</span><span style="cursor:pointer;color:var(--muted);font-size:14px" onclick="document.getElementById('gapNR').innerHTML='';document.querySelectorAll('.ac-p').forEach(b=>b.style.background='')">✕</span></div>`;
+  if(!top.length){h+=`<div style="padding:8px;color:var(--muted);font-size:11px">Kein Heilmittel passt in ${gapMin}min</div>`;}
+  top.forEach((it,i)=>{
+    const reasons=it.reasons||[];let badges='';reasons.forEach(r=>{const cc=r.includes('BVB')||r.includes('LVB')?'c-green':r.includes('Blanko')?'c-purple':r.includes('Post')?'c-amber':r.includes('+')?'c-blue':'c-fire';badges+=`<span class="pr-b ${cc}">${r}</span>`;});
+    const hintStr=it._hints?it._hints.join(' · '):'';
+    h+=`<div style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--card);border-radius:10px;margin-bottom:3px;border:1px solid var(--border)">`;
+    h+=`<div style="font-family:Montserrat;font-size:14px;font-weight:900;color:var(--fire);width:22px;text-align:center;flex-shrink:0">${i+1}</div>`;
+    h+=`<div style="flex:1;min-width:0"><div style="font-family:Montserrat;font-size:12px;font-weight:800">${it.name}</div><div style="font-size:9px;color:var(--muted)">${it.detail}</div>`;
+    if(hintStr)h+=`<div style="font-size:8px;color:var(--teal);margin-top:1px">${hintStr}</div>`;
+    h+=`</div>`;
+    h+=`<div style="display:flex;gap:2px;flex-wrap:wrap;justify-content:flex-end;max-width:120px;flex-shrink:0">${badges}</div>`;
+    h+=`<div style="font-family:Montserrat;font-size:11px;font-weight:800;color:var(--fire);flex-shrink:0;padding:3px 8px;background:var(--fire-bg);border-radius:100px">${it._gapScore}pt</div>`;
+    h+=`</div>`;
+  });
+  if(noFit.length){
+    const rejectedDauer=noFit.length-rejectedFreq-rejectedTherapeut;
+    const reasons=[];
+    if(rejectedDauer>0)reasons.push(rejectedDauer+' zeitlich unpassend');
+    if(rejectedFreq>0)reasons.push(rejectedFreq+' bereits 2+x/Woche');
+    if(rejectedTherapeut>0)reasons.push(rejectedTherapeut+' kein Bezug zu '+thName);
+    // Rausgefilterte im globalen State speichern für den Toggle
+    window._lastGapRejected=noFit;
+    window._lastGapThName=thName;
+    h+=`<div style="margin-top:10px;padding:8px 4px;border-top:1px dashed rgba(239,68,68,.2);display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap">`;
+    h+=`<span style="font-size:10px;color:var(--muted)">${noFit.length} Patienten ausgefiltert · ${reasons.join(' · ')}</span>`;
+    h+=`<button onclick="toggleGapRejected(this)" style="padding:4px 12px;border:1.5px solid var(--muted);background:#fff;border-radius:100px;font-family:Montserrat;font-size:10px;font-weight:700;cursor:pointer;color:var(--muted);white-space:nowrap">👁 Trotzdem anzeigen</button>`;
+    h+=`</div>`;
+    h+=`<div id="gapRejectedList" style="display:none;margin-top:6px"></div>`;
+  }
+  h+=`</div>`;
+  el.innerHTML=h;
+}
+
+// Toggle für die rausgefilterten Nachrücker
+function toggleGapRejected(btn){
+  const el=document.getElementById('gapRejectedList');if(!el)return;
+  const open=el.style.display!=='none';
+  if(open){
+    el.style.display='none';btn.textContent='👁 Trotzdem anzeigen';
+    btn.style.borderColor='var(--muted)';btn.style.color='var(--muted)';
+    return;
+  }
+  // Liste aufbauen
+  const rej=window._lastGapRejected||[];
+  const thName=window._lastGapThName||'';
+  let h='';
+  // Gruppiert nach Reject-Grund
+  const byReason={dauer:[],freq:[],therapeut:[]};
+  rej.forEach(it=>{const r=it._rejectReason||'dauer';if(byReason[r])byReason[r].push(it);});
+  const labels={dauer:'⏱ Zeitlich unpassend',freq:'📈 Kommt bereits 2+x/Woche',therapeut:'👤 Kein Bezug zu '+thName};
+  ['therapeut','freq','dauer'].forEach(reason=>{
+    const list=byReason[reason];if(!list.length)return;
+    h+=`<div style="margin-top:8px"><div style="font-family:Montserrat;font-size:9px;font-weight:800;color:var(--muted);letter-spacing:1px;margin-bottom:3px;padding:0 4px">${labels[reason]} (${list.length})</div>`;
+    list.slice(0,15).forEach(it=>{
+      const reasons=it.reasons||[];let badges='';reasons.forEach(r=>{const cc=r.includes('BVB')||r.includes('LVB')?'c-green':r.includes('Blanko')?'c-purple':r.includes('Post')?'c-amber':r.includes('+')?'c-blue':'c-fire';badges+=`<span class="pr-b ${cc}">${r}</span>`;});
+      const hintStr=it._hints?it._hints.join(' · '):'';
+      h+=`<div style="display:flex;align-items:center;gap:8px;padding:6px 10px;background:#fafaf8;border-radius:8px;margin-bottom:2px;border:1px solid var(--border);opacity:0.85">`;
+      h+=`<div style="flex:1;min-width:0"><div style="font-family:Montserrat;font-size:11px;font-weight:700">${esc(it.name)}</div><div style="font-size:9px;color:var(--muted)">${esc(it.detail)}</div>`;
+      if(hintStr)h+=`<div style="font-size:8px;color:var(--amber);margin-top:1px">${hintStr}</div>`;
+      h+=`</div>`;
+      h+=`<div style="display:flex;gap:2px;flex-wrap:wrap;justify-content:flex-end;max-width:110px;flex-shrink:0">${badges}</div>`;
+      h+=`<div style="font-family:Montserrat;font-size:10px;font-weight:700;color:var(--muted);flex-shrink:0;padding:2px 7px;background:#fff;border-radius:100px;border:1px solid var(--border)">${it.score}pt</div>`;
+      h+=`</div>`;
+    });
+    if(list.length>15)h+=`<div style="font-size:9px;color:var(--muted);padding:2px 4px">... und ${list.length-15} weitere</div>`;
+  });
+  el.innerHTML=h;el.style.display='block';
+  btn.textContent='✕ Ausblenden';btn.style.borderColor='var(--fire)';btn.style.color='var(--fire)';
+}
+
+function analyzeRezepte(tp,beh,pl,bereich,ergoDet,refDate){
+  const nm={};if(pl&&Array.isArray(pl))pl.forEach(p=>{if(p.Id)nm[p.Id]=(p.Nachname||'')+', '+(p.Vorname||'');});
+  const ergoDG=buildErgoDGMap(ergoDet);
+  const pi={};tp.forEach(t=>{if(!t.PatientId)return;const id=t.PatientId;if(!pi[id])pi[id]={name:(t.PatientNachname||'')+', '+(t.PatientVorname||''),termine:[]};pi[id].termine.push({beginn:t.Beginn,ende:t.Ende,bez:t.Bezeichnung,ma:t.Mitarbeiter});});
+  const now=new Date();Object.values(pi).forEach(p=>{p.termine.sort((a,b)=>new Date(a.beginn)-new Date(b.beginn));p.nextTermin=p.termine.find(t=>new Date(t.beginn)>=new Date(now.toDateString()))||p.termine[0];});
+  const rd=refDate?new Date(refDate+'T00:00:00'):new Date();rd.setHours(0,0,0,0);
+  const rdPlus1=new Date(rd);rdPlus1.setDate(rdPlus1.getDate()+1);
+  const rdMinus1=new Date(rd);rdMinus1.setDate(rdMinus1.getDate()-1);
+  const cat={bvb:[],blanko:[],folge:[],reserv:[],freq:[],nr:[]};
+  beh.forEach(p=>{
+    const pid=p.patientId;const d=p.data||{};const vos=d.Verordnungen||[];const rv=d.Terminreservierungen||[];
+    const inf=pi[pid]||{name:nm[pid]||'Unbekannt',nextTermin:null,termine:[]};
+    const act=vos.filter(v=>!v.IsReadOnly&&(!bereich||v.Bereich===bereich));
+    if(!act.length){const fr=rv.filter(r=>(r.Beginn||'')>now.toISOString().split('T')[0]);if(fr.length>0)cat.reserv.push({name:inf.name,detail:'Termine ohne Rezept',hint:'Rezept mitbringen?',termin:inf.nextTermin,badge:fr.length+'',badgeC:'c-amber'});return;}
+    if(!inf.nextTermin){const at=[];vos.forEach(v=>{(v.Termine||[]).forEach(t=>{if(t.Status===1&&t.Datum)at.push(t);});});at.sort((a,b)=>new Date(a.Datum)-new Date(b.Datum));const nb=at.find(t=>new Date(t.Datum)>=new Date(now.toDateString()));if(nb)inf.nextTermin={beginn:nb.Datum};}
+    let pB=null,pBl=false,pBP=false,pPO=false,pFr=null,pG=0,pE=0,pT=0;const mH=hMHM(act);let aB=[];
+    let vosTotal=0,vosHB=0; // Hausbesuch-Zähler: aktive Verordnungen gesamt + davon Hausbesuch
+    act.forEach(v=>{
+      const icd=v.ErsterIcd10;const be=v.Beschreibung||'';const roi=v.ReadOnlyInformation||{};const isB=roi.IsBlankoverordnung||false;
+      const te=v.Termine||[];const gp=te.filter(t=>t.Status===1).length;const er=te.filter(t=>t.Status===4).length;const to=te.length;
+      pG+=gp;pE+=er;pT+=to;aB.push(be);const bvb=fBVB(icd);
+      // Hausbesuch-Check: Beschreibung + Heilmittel der Verordnung
+      vosTotal++;if(isHB(v))vosHB++;
+      if(bvb&&bvb.t!=='KEIN'){pB=bvb;cat.bvb.push({name:inf.name,icd,beschr:be,detail:`${bvb.t}: ${bvb.n}${bvb.h?' ('+bvb.h+')':''}`,hint:`Arzt kann bis ${bvb.vo} verordnen`,termin:inf.nextTermin,gep:gp,erb:er,tot:to,badge:bvb.t,badgeC:'c-green'});}
+      if(isBP(icd)&&!isB){pBP=true;cat.blanko.push({name:inf.name,icd,beschr:be,detail:'Schulter → Blanko (16 Wo)',hint:'Arzt → Blanko-Umstellung',termin:inf.nextTermin,gep:gp,erb:er,tot:to,badge:'Blanko',badgeC:'c-purple'});}
+      if(bereich===1&&!isB&&v.Id&&ergoDG[v.Id]){const dg=ergoDG[v.Id];if(['PS3','PS4','SB1'].includes(dg)){pBP=true;cat.blanko.push({name:inf.name,icd,beschr:be,detail:'Ergo '+dg+' → Blanko möglich (16 Wo)',hint:'Arzt → Blanko-Umstellung empfohlen',termin:inf.nextTermin,gep:gp,erb:er,tot:to,badge:'Ergo-Blanko',badgeC:'c-purple'});}}
+      if(isB)pBl=true;if(isPO(icd))pPO=true;
+      if(gp<=2&&to>0)cat.folge.push({name:inf.name,icd,beschr:be,detail:`Noch ${gp}`,hint:'Folgerezept!',termin:inf.nextTermin,gep:gp,erb:er,tot:to,badge:gp===0?'Leer':'Noch '+gp,badgeC:'c-red'});
+      const fr=aFreq(te);if(fr&&fr.avg>=7&&gp>=4){pFr=fr;cat.freq.push({name:inf.name,icd,beschr:be,detail:`~${fr.pw}x/Wo`,hint:'Frequenz↑?',termin:inf.nextTermin,gep:gp,erb:er,tot:to,badge:fr.pw+'x/Wo',badgeC:'c-blue'});}
+      if(!pFr&&fr)pFr=fr;
+    });
+    const td=new Date(rd);const tm2=new Date(rdPlus1);const yd=new Date(rdMinus1);
+    let hR=(inf.termine||[]).some(t=>{const d=new Date(t.beginn);d.setHours(0,0,0,0);return d>=yd&&d<=tm2;});
+    if(!hR)act.forEach(v=>{(v.Termine||[]).forEach(t=>{if(t.Status===1&&t.Datum){const d=new Date(t.Datum);d.setHours(0,0,0,0);if(d>=yd&&d<=tm2)hR=true;}});});
+    let sc=0;const re=[];if(pB){sc+=3;re.push(pB.t);}if(pBl){sc+=3;re.push('Blanko');}if(pBP){sc+=2;re.push('Blanko mögl.');}if(pPO){sc+=3;re.push('Post-OP');}if(mH){sc+=2;re.push(mH.join('+'));}if(pFr&&pFr.avg>=7){sc+=2;re.push(pFr.pw+'x/Wo');}if(pG>6){sc+=1;re.push(pG+' offen');}
+    if(sc>=2&&!hR){
+      // Hausbesuch-Filter: Patienten mit AUSSCHLIESSLICH Hausbesuch-Verordnungen
+      // sind keine sinnvollen Nachrücker für Praxislücken → überspringen
+      const onlyHB=(vosTotal>0&&vosHB===vosTotal);
+      if(onlyHB)return;
+      const hmD=aB.length?Math.max(...aB.map(b=>getHMDauer(b))):20;
+      // Stammtherapeut-Definition:
+      //   Rückwärts: Termine der letzten 6 Monate (Status 4 = erbracht oder jeder Status mit Datum)
+      //   Vorwärts: ALLE zukünftigen geplanten Termine (Status 1) aus den Rezepten
+      const thHist=new Set();
+      const today=new Date();today.setHours(0,0,0,0);
+      const sixMonthsAgo=new Date(today);sixMonthsAgo.setMonth(sixMonthsAgo.getMonth()-6);
+      act.forEach(v=>{(v.Termine||[]).forEach(t=>{
+        if(!t.MitarbeiterName||!t.Datum)return;
+        const d=new Date(t.Datum);
+        // Vergangene Termine: nur wenn innerhalb der letzten 6 Monate
+        // Zukünftige Termine: immer zählen (egal wie weit in der Zukunft)
+        if(d>=today||(d>=sixMonthsAgo&&d<today)){
+          thHist.add(t.MitarbeiterName);
+        }
+      });});
+      // Zusätzlich: Termine aus den TP-JSONs (heute/morgen) — Fallback, falls nicht in behData
+      (inf.termine||[]).forEach(t=>{if(t.ma)(t.ma).forEach(m=>{if(m.Vorname||m.Nachname)thHist.add(((m.Vorname||'')+' '+(m.Nachname||'')).trim());});});
+      const allDates=[];act.forEach(v=>{(v.Termine||[]).forEach(t=>{if(t.Datum&&t.Status===4)allDates.push(t.Datum);});});
+      const tPat=analyzeTimePattern(allDates);
+      cat.nr.push({name:inf.name,icd:act[0]?.ErsterIcd10||'—',detail:re.join(' · '),hint:pFr?`~${pFr.pw}x/Wo`:'Mehr möglich',termin:inf.nextTermin,gep:pG,erb:pE,tot:pT,score:sc,reasons:re,badge:sc+'',badgeC:'c-fire',tags:{bvb:!!pB,blanko:pBl||pBP,postop:pPO,multi:!!mH},_hmDauer:hmD,_thHistory:[...thHist],_timePat:tPat,_freqPerWeek:pFr?pFr.pw:0});
+    }
+  });
+  cat.nr.sort((a,b)=>b.score-a.score);return cat;
+}
+
+// Prüft ob ein Rezept/Termin als Hausbesuch markiert ist
+// Checks: explizite Felder, Beschreibungstexte, Heilmittel-Bezeichnungen
+function isHB(v){
+  if(!v)return false;
+  // Direkte Boolean-Flags (verschiedene Schreibweisen)
+  if(v.IstHausbesuch===true||v.Hausbesuch===true||v.AlsHausbesuch===true)return true;
+  if(v.Behandlungsort&&/hausbesuch/i.test(v.Behandlungsort))return true;
+  if(v.Beschreibung&&/hausbesuch/i.test(v.Beschreibung))return true;
+  // Hausbesuch-Objekt mit Pauschalen-ID = aktiver Hausbesuch
+  if(v.Hausbesuch&&typeof v.Hausbesuch==='object'){
+    if(v.Hausbesuch.PositionsnummerHausbesuchPauschaleId)return true;
+    if(v.Hausbesuch.EntfernungInKilometern>0)return true;
+  }
+  if(v.Details){
+    if(v.Details.IstHausbesuch===true||v.Details.Hausbesuch===true||v.Details.AlsHausbesuch===true)return true;
+    if(v.Details.Behandlungsort&&/hausbesuch/i.test(v.Details.Behandlungsort))return true;
+  }
+  // Heilmittel checken
+  if(v.VerordneteHeilmittel&&Array.isArray(v.VerordneteHeilmittel)){
+    for(const hm of v.VerordneteHeilmittel){
+      if(hm.Bezeichnung&&/hausbesuch/i.test(hm.Bezeichnung))return true;
+      if(hm.Kurzbezeichnung&&/hausbesuch|^hb$/i.test(hm.Kurzbezeichnung))return true;
+      if(hm.AlsHausbesuch===true)return true;
+    }
+  }
+  return false;
+}
+
+function getErgoPatients(){
+  if(!ergoDetailData||!Array.isArray(ergoDetailData))return[];
+  const pts={};
+  ergoDetailData.forEach(e=>{
+    const p=e.Verordnung?.Patient;const d=e.Verordnung?.Details;if(!p?.Id)return;
+    if(!pts[p.Id])pts[p.Id]={name:p.Nachname+', '+p.Vorname,nachname:p.Nachname,vorname:p.Vorname,ort:p.Ort||'',geb:p.Geburtsdatum||'',dg:new Set(),heilmittel:new Set(),blanko:false,active:0,hausbesuch:false,praxis:false};
+    if(d?.Diagnosegruppe)pts[p.Id].dg.add(d.Diagnosegruppe);
+    if(!e.Verordnung.IsReadOnly)pts[p.Id].active++;
+    if(d?.IsBlankoformular)pts[p.Id].blanko=true;
+    (e.VerordneteHeilmittel||[]).forEach(hm=>{if(hm.Kurzbezeichnung)pts[p.Id].heilmittel.add(hm.Kurzbezeichnung);});
+    // Hausbesuch-Erkennung: prüft Verordnung + Heilmittel
+    const hbCheck={...e.Verordnung,VerordneteHeilmittel:e.VerordneteHeilmittel,Details:d};
+    if(isHB(hbCheck))pts[p.Id].hausbesuch=true;
+    else pts[p.Id].praxis=true;
+  });
+  return Object.values(pts).sort((a,b)=>a.nachname.localeCompare(b.nachname));
+}
+
+function showRD(k){
+  document.querySelectorAll('.rkpi').forEach(x=>x.classList.remove('active'));const el=document.getElementById('rk-'+k);if(el)el.classList.add('active');
+  if(k==='patienten'){showErgoPatients();return;}
+  const c=RC;let items=[],title='',isNR=false;
+  if(k==='nr'){items=c.nr;title='🔥 Nachrücker';isNR=true;}
+  else if(k==='bvb'){items=c.bvb;title='🏥 BVB/LVB';}
+  else if(k==='blanko'){items=c.blanko;title='💊 Blanko (16 Wo)';}
+  else if(k==='folge'){items=c.folge;title='🔴 Folgerezept';}
+  else if(k==='reserv'){items=c.reserv;title='⚠️ Ohne VO';}
+  else if(k==='freq'){items=c.freq;title='📈 Frequenz↑';}
+  else{items=[...c.bvb,...c.blanko,...c.folge,...c.reserv,...c.freq];title='📋 Alle';}
+  if(!items.length){document.getElementById('rd').innerHTML='<div style="text-align:center;padding:16px;color:var(--muted)">Keine</div>';return;}
+  let h=`<div class="d-t">${title} (${items.length})<span class="d-c" onclick="document.getElementById('rd').innerHTML=''">✕</span></div>`;
+  if(isNR){h+=`<div style="display:flex;gap:4px;margin-bottom:8px;flex-wrap:wrap">`;
+    [{f:'all',l:'Alle',c:items.length},{f:'postop',l:'Post-OP',c:items.filter(i=>i.tags?.postop).length},{f:'bvb',l:'BVB/LVB',c:items.filter(i=>i.tags?.bvb).length},{f:'blanko',l:'Blanko',c:items.filter(i=>i.tags?.blanko).length},{f:'multi',l:'KG+MLD',c:items.filter(i=>i.tags?.multi).length}].forEach(x=>{h+=`<button class="hdr-btn" style="font-size:8px" onclick="filterNR('${x.f}')">${x.l}(${x.c})</button>`;});h+=`</div>`;}
+  items.forEach((it,i)=>{
+    const nt=it.termin;let th='';
+    if(nt){const d=new Date(nt.beginn);th=`<div class="pr-dt">${d.toLocaleDateString('de-DE',{weekday:'short',day:'2-digit',month:'2-digit'})}</div><div class="pr-tm">${d.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'})}</div>`;if(nt.ma&&nt.ma[0])th+=`<div class="pr-th">bei ${nt.ma[0].Vorname||''}</div>`;}
+    const tgs=it.tags?Object.entries(it.tags).filter(([_,v])=>v).map(([x])=>x).join(' '):'';
+    h+=`<div class="pr nr-r" data-t="${tgs}">`;
+    if(isNR)h+=`<div class="sc">${it.score}</div>`;
+    h+=`<div class="pr-i"><div class="pr-n">${isNR?'#'+(i+1)+' ':''}${it.name}</div><div class="pr-d"><b>${it.detail}</b> — ${it.hint}</div></div>`;
+    if(isNR&&it.reasons){h+=`<div class="pr-bs">`;it.reasons.forEach(r=>{const cc=r.includes('BVB')||r.includes('LVB')?'c-green':r.includes('Blanko')?'c-purple':r.includes('Post')?'c-amber':r.includes('+')?'c-blue':'c-fire';h+=`<span class="pr-b ${cc}">${r}</span>`;});h+=`</div>`;}
+    else if(it.badge)h+=`<span class="pr-b ${it.badgeC||''}">${it.badge}</span>`;
+    h+=`<div class="pr-t">${th}</div></div>`;
+  });
+  document.getElementById('rd').innerHTML=h;
+}
+
+// Ergo-Patienten-Filter State (Mehrfach + UND-Verknüpfung)
+window._epState={status:'all',dgs:new Set(),hms:new Set(),orts:new Set()};
+
+function showErgoPatients(){
+  const pts=getErgoPatients();
+  // State zurücksetzen bei jedem Öffnen
+  window._epState={status:'all',dgs:new Set(),hms:new Set(),orts:new Set()};
+  const active=pts.filter(p=>p.active>0);const inactive=pts.filter(p=>p.active===0);const blanko=pts.filter(p=>p.blanko);
+  const hbCount=pts.filter(p=>p.hausbesuch).length;const pxCount=pts.filter(p=>p.praxis).length;
+  // Unique DG und HM sammeln, mit Patienten-Count pro Wert
+  const dgCount={},hmCount={};
+  pts.forEach(p=>{
+    p.dg.forEach(d=>{dgCount[d]=(dgCount[d]||0)+1;});
+    p.heilmittel.forEach(h=>{hmCount[h]=(hmCount[h]||0)+1;});
+  });
+  const allDGs=Object.keys(dgCount).sort();
+  const allHMs=Object.keys(hmCount).sort((a,b)=>hmCount[b]-hmCount[a]);
+  let h=`<div class="d-t">👥 Ergo-Patienten (<span id="epCount">${pts.length}</span>/${pts.length})<span class="d-c" onclick="document.getElementById('rd').innerHTML=''">✕</span></div>`;
+  // Status-Filter (Single-Select, wie vorher)
+  h+=`<div style="margin-bottom:6px"><div style="font-family:Montserrat;font-size:8px;font-weight:800;color:var(--muted);letter-spacing:1px;margin-bottom:3px">STATUS</div>`;
+  h+=`<div style="display:flex;gap:4px;flex-wrap:wrap">`;
+  [{f:'all',l:'Alle',c:pts.length},{f:'active',l:'Aktiv',c:active.length},{f:'blanko',l:'Blanko',c:blanko.length},{f:'inactive',l:'Abgeschl.',c:inactive.length}].forEach(x=>{
+    h+=`<button class="hdr-btn ep-status-btn" data-st="${x.f}" style="font-size:8px${x.f==='all'?';border-color:var(--red);color:var(--red);background:var(--red-bg)':''}" onclick="epSetStatus('${x.f}',this)">${x.l} (${x.c})</button>`;
+  });
+  h+=`</div></div>`;
+  // Behandlungsort-Filter (Mehrfach-Chips: Praxis / Hausbesuch)
+  if(hbCount||pxCount){
+    h+=`<div style="margin-bottom:6px"><div style="font-family:Montserrat;font-size:8px;font-weight:800;color:var(--muted);letter-spacing:1px;margin-bottom:3px">BEHANDLUNGSORT <span style="color:var(--red);font-weight:600;margin-left:4px;cursor:pointer" onclick="epClearOrt()">✕ zurücksetzen</span></div>`;
+    h+=`<div style="display:flex;gap:4px;flex-wrap:wrap">`;
+    h+=`<button class="hdr-btn ep-ort-btn" data-ort="praxis" style="font-size:8px" onclick="epToggleOrt('praxis',this)">🏥 Praxis (${pxCount})</button>`;
+    h+=`<button class="hdr-btn ep-ort-btn" data-ort="hausbesuch" style="font-size:8px" onclick="epToggleOrt('hausbesuch',this)">🚗 Hausbesuch (${hbCount})</button>`;
+    h+=`</div></div>`;
+  }
+  // DG-Filter (Multi-Select Chips)
+  if(allDGs.length){
+    h+=`<div style="margin-bottom:6px"><div style="font-family:Montserrat;font-size:8px;font-weight:800;color:var(--muted);letter-spacing:1px;margin-bottom:3px">DIAGNOSEGRUPPE <span style="color:var(--red);font-weight:600;margin-left:4px;cursor:pointer" onclick="epClearDG()">✕ zurücksetzen</span></div>`;
+    h+=`<div style="display:flex;gap:4px;flex-wrap:wrap">`;
+    allDGs.forEach(dg=>{
+      h+=`<button class="hdr-btn ep-dg-btn" data-dg="${esc(dg)}" style="font-size:8px" onclick="epToggleDG('${escA(dg)}',this)">${esc(dg)} (${dgCount[dg]})</button>`;
+    });
+    h+=`</div></div>`;
+  }
+  // HM-Filter (Multi-Select Chips)
+  if(allHMs.length){
+    h+=`<div style="margin-bottom:10px"><div style="font-family:Montserrat;font-size:8px;font-weight:800;color:var(--muted);letter-spacing:1px;margin-bottom:3px">HEILMITTEL <span style="color:var(--red);font-weight:600;margin-left:4px;cursor:pointer" onclick="epClearHM()">✕ zurücksetzen</span></div>`;
+    h+=`<div style="display:flex;gap:4px;flex-wrap:wrap">`;
+    allHMs.forEach(hm=>{
+      h+=`<button class="hdr-btn ep-hm-btn" data-hm="${esc(hm)}" style="font-size:8px" onclick="epToggleHM('${escA(hm)}',this)">${esc(hm)} (${hmCount[hm]})</button>`;
+    });
+    h+=`</div></div>`;
+  }
+  pts.forEach((p,i)=>{
+    const dgArr=[...p.dg].sort();const hmArr=[...p.heilmittel];
+    const dg=dgArr.join(', ');const hm=hmArr.join(', ');
+    const statusBadge=p.active>0?(p.blanko?'<span class="pr-b c-purple">Blanko</span>':'<span class="pr-b c-green">Aktiv</span>'):'<span class="pr-b c-amber">Abgeschl.</span>';
+    const dgBadge=`<span class="pr-b c-blue">${dg}</span>`;
+    // Ort-Badge (🚗 Hausbesuch oder 🏥 Praxis, beides wenn gemischt)
+    let ortBadge='';
+    if(p.hausbesuch&&p.praxis)ortBadge='<span class="pr-b c-amber" title="Gemischt">🚗🏥</span>';
+    else if(p.hausbesuch)ortBadge='<span class="pr-b c-amber" title="Hausbesuch">🚗 HB</span>';
+    else if(p.praxis)ortBadge='<span class="pr-b c-green" title="Praxis">🏥</span>';
+    // Daten-Attribute für Filter (pipe-separated, damit mehrere Werte prüfbar sind)
+    const dgData=dgArr.map(d=>'|'+d+'|').join('');
+    const hmData=hmArr.map(m=>'|'+m+'|').join('');
+    const ortData=(p.hausbesuch?'|hausbesuch|':'')+(p.praxis?'|praxis|':'');
+    h+=`<div class="pr ep-r" data-ep="${p.active>0?'active':'inactive'}${p.blanko?' blanko':''}" data-dg="${esc(dgData)}" data-hm="${esc(hmData)}" data-ort="${ortData}">`;
+    h+=`<div style="font-family:Montserrat;font-size:13px;font-weight:800;color:var(--muted);width:24px;text-align:center;flex-shrink:0">${i+1}</div>`;
+    h+=`<div class="pr-i"><div class="pr-n">${p.nachname}, ${p.vorname}</div><div class="pr-d">${hm||'—'}</div></div>`;
+    h+=`<div class="pr-bs" style="max-width:180px">${ortBadge}${dgBadge}${statusBadge}</div>`;
+    h+=`</div>`;
+  });
+  document.getElementById('rd').innerHTML=h;
+}
+
+// ── Ergo-Patient Filter Logic ──
+function epSetStatus(st,btn){
+  window._epState.status=st;
+  document.querySelectorAll('.ep-status-btn').forEach(b=>{b.style.borderColor='';b.style.color='';b.style.background='';});
+  btn.style.borderColor='var(--red)';btn.style.color='var(--red)';btn.style.background='var(--red-bg)';
+  epApplyFilter();
+}
+function epToggleDG(dg,btn){
+  const s=window._epState.dgs;
+  if(s.has(dg)){s.delete(dg);btn.style.borderColor='';btn.style.color='';btn.style.background='';}
+  else{s.add(dg);btn.style.borderColor='var(--blue)';btn.style.color='var(--blue)';btn.style.background='var(--blue-bg)';}
+  epApplyFilter();
+}
+function epToggleHM(hm,btn){
+  const s=window._epState.hms;
+  if(s.has(hm)){s.delete(hm);btn.style.borderColor='';btn.style.color='';btn.style.background='';}
+  else{s.add(hm);btn.style.borderColor='var(--teal)';btn.style.color='var(--teal)';btn.style.background='var(--teal-bg)';}
+  epApplyFilter();
+}
+function epToggleOrt(ort,btn){
+  const s=window._epState.orts;
+  if(s.has(ort)){s.delete(ort);btn.style.borderColor='';btn.style.color='';btn.style.background='';}
+  else{s.add(ort);btn.style.borderColor='var(--amber)';btn.style.color='var(--amber)';btn.style.background='var(--amber-bg)';}
+  epApplyFilter();
+}
+function epClearDG(){
+  window._epState.dgs.clear();
+  document.querySelectorAll('.ep-dg-btn').forEach(b=>{b.style.borderColor='';b.style.color='';b.style.background='';});
+  epApplyFilter();
+}
+function epClearHM(){
+  window._epState.hms.clear();
+  document.querySelectorAll('.ep-hm-btn').forEach(b=>{b.style.borderColor='';b.style.color='';b.style.background='';});
+  epApplyFilter();
+}
+function epClearOrt(){
+  window._epState.orts.clear();
+  document.querySelectorAll('.ep-ort-btn').forEach(b=>{b.style.borderColor='';b.style.color='';b.style.background='';});
+  epApplyFilter();
+}
+function epApplyFilter(){
+  const{status,dgs,hms,orts}=window._epState;
+  const dgArr=[...dgs],hmArr=[...hms],ortArr=[...orts];
+  let visible=0,total=0;
+  document.querySelectorAll('.ep-r').forEach(r=>{
+    total++;
+    const d=r.dataset.ep||'',dgd=r.dataset.dg||'',hmd=r.dataset.hm||'',ortd=r.dataset.ort||'';
+    // Status-Filter
+    let ok=true;
+    if(status==='active')ok=d.includes('active');
+    else if(status==='blanko')ok=d.includes('blanko');
+    else if(status==='inactive')ok=d.includes('inactive');
+    // DG-Filter (UND: jede ausgewählte DG muss im Patienten vorhanden sein)
+    if(ok&&dgArr.length)ok=dgArr.every(dg=>dgd.includes('|'+dg+'|'));
+    // HM-Filter (UND: jedes ausgewählte HM muss im Patienten vorhanden sein)
+    if(ok&&hmArr.length)ok=hmArr.every(hm=>hmd.includes('|'+hm+'|'));
+    // Ort-Filter (ODER bei mehreren: z.B. Praxis ODER Hausbesuch — sinnvoller als UND)
+    if(ok&&ortArr.length)ok=ortArr.some(o=>ortd.includes('|'+o+'|'));
+    r.style.display=ok?'':'none';
+    if(ok)visible++;
+  });
+  const c=document.getElementById('epCount');if(c)c.textContent=visible;
+}
+function filterNR(t){document.querySelectorAll('.nr-r').forEach(r=>{r.style.display=t==='all'?'':r.dataset.t.includes(t)?'':'none';});}
+
+// ═══════════════════════════════════════════════════════════
+// CHECKER
+// ═══════════════════════════════════════════════════════════
+const ICD_RE=/^[A-Z]\d{2}(\.\d{1,4})?-?$/;
+function renderChecker(){
+  let h=`<div style="max-width:560px;margin:0 auto"><div class="summary" style="background:linear-gradient(135deg,#7c3aed,#5b21b6)"><h2>🔍 Rezept-Checker</h2><div style="font-size:12px;opacity:.9;margin-bottom:12px">ICD-10 eingeben → sofort prüfen</div><div style="display:flex;gap:6px"><input type="text" id="icdIn" placeholder="z.B. M75.1, G35.1..." style="flex:1;padding:10px 16px;border:none;border-radius:100px;font-size:14px;font-family:Montserrat;font-weight:700;text-transform:uppercase;outline:none;color:#020101" oninput="checkICD()"><button onclick="checkICD()" style="padding:10px 20px;border:none;border-radius:100px;background:#fff;color:#7c3aed;font-family:Montserrat;font-size:12px;font-weight:800;cursor:pointer">Prüfen</button></div></div><div id="chkR"></div></div>`;
+  document.getElementById('dayBriefing').innerHTML=h;document.getElementById('icdIn').focus();
+}
+function checkICD(){
+  const raw=document.getElementById('icdIn').value.trim().toUpperCase().replace(/\s+/g,'');
+  if(!raw){document.getElementById('chkR').innerHTML='';return;}
+  if(!ICD_RE.test(raw)){document.getElementById('chkR').innerHTML=`<div style="background:var(--red-bg);border-radius:16px;padding:16px;margin-top:12px"><span style="color:var(--red)">❌ Ungültiger ICD-10</span></div>`;return;}
+  const res=[];const bvb=fBVB(raw);
+  if(bvb&&bvb.t!=='KEIN'){const isL=bvb.t==='LVB';res.push({icon:'🏥',title:bvb.t+': '+bvb.n,color:'var(--teal)',bg:'var(--teal-bg)',details:[`Bis <b>${bvb.vo}</b> pro Rezept`,isL?'<b>Dauerhaft</b> verordnungsfähig':'<b>Nicht im Budget</b>',bvb.h?`⚠️ ${bvb.h}`:null].filter(Boolean)});}
+  else if(bvb&&bvb.t==='KEIN')res.push({icon:'❌',title:bvb.n,color:'var(--muted)',bg:'#f5f5f5',details:['Kein BVB']});
+  if(isBP(raw))res.push({icon:'💊',title:'Blanko möglich!',color:'#7c3aed',bg:'rgba(124,58,237,.08)',details:['<b>16 Wochen</b> gültig','Therapeut bestimmt alles','Arzt → Blanko-Umstellung']});
+  if(isPO(raw))res.push({icon:'🔧',title:'Post-OP',color:'var(--amber)',bg:'var(--amber-bg)',details:['<b>2-3x/Woche</b> empfohlen','Ideal als Nachrücker']});
+  if(!res.length)res.push({icon:'📋',title:'Normale Verordnung',color:'var(--muted)',bg:'#f5f5f5',details:['Kein BVB/LVB/Blanko']});
+  let h='';res.forEach(r=>{h+=`<div style="background:${r.bg};border-radius:16px;padding:16px;margin-top:8px;border:1px solid ${r.color}22"><div style="display:flex;align-items:center;gap:6px;margin-bottom:8px"><span style="font-size:18px">${r.icon}</span><span style="font-family:Montserrat;font-size:14px;font-weight:800;color:${r.color}">${r.title}</span></div><div style="font-size:11px;line-height:1.8">`;r.details.forEach(d=>{h+=`<div>→ ${d}</div>`;});h+=`</div></div>`;});
+  document.getElementById('chkR').innerHTML=h;
+}
+
+// ═══════════════════════════════════════════════════════════
+// AUSLASTUNG (from Patientenchecker)
+// ═══════════════════════════════════════════════════════════
+function parseAuslastung(data){
+  const kwRow=data[2]||[],monthRow=data[1]||[],physioSum=data[19]||[];
+  let ergoSum=null;
+  for(let i=21;i<Math.min(data.length,35);i++){if(data[i]&&data[i][0]&&String(data[i][0]).includes('Summe')){ergoSum=data[i];break;}}
+  const kws=[];let col=5,lastP=null;
+  while(col<kwRow.length){
+    const kw=kwRow[col];
+    if(kw&&typeof kw==='number'&&kw>0&&kw<53){
+      const ac=col+2,pv=physioSum[ac],ev=ergoSum?ergoSum[ac]:null,mo=monthRow[col]||'';
+      if(pv&&typeof pv==='number'&&pv>0&&pv<=1.5){
+        const pp=Math.round(pv*1000)/10;
+        const isReal=lastP===null||Math.abs(pp-lastP)>0.01;
+        if(!isReal)break;
+        lastP=pp;
+        kws.push({kw:Math.round(kw),physio:pp,ergo:(ev&&typeof ev==='number'&&ev>0&&ev<=1.5)?Math.round(ev*1000)/10:null,month:String(mo)});
+      }
+      col+=4;
+    }else col++;
+  }
+  return kws;
+}
+
+function changeKW(d){const allKWs=[...auslastungData.kimojo.map(x=>x.kw),...auslastungData.phfip.map(x=>x.kw)];if(!allKWs.length)return;const min=Math.min(...allKWs),max=Math.max(...allKWs);selectedKW=Math.max(min,Math.min(max,selectedKW+d));renderAuslastung();}
+
+function renderAuslastung(){
+  const kD=auslastungData.kimojo,pD=auslastungData.phfip;
+  const kwK=kD.find(d=>d.kw===selectedKW),kwP=pD.find(d=>d.kw===selectedKW);
+  const month=kwK?kwK.month:kwP?kwP.month:'';const curKW=getCurrentKW();
+  const titleEl=document.getElementById('kwTitle');const monthEl=document.getElementById('kwMonth');
+  if(titleEl)titleEl.textContent=`KW ${selectedKW}`;
+  if(monthEl)monthEl.textContent=`${month} · Aktuelle KW: ${curKW}`;
+
+  function bar(label,val){
+    if(val===null||val===undefined)return`<div class="ausl-row"><span class="ausl-label">${label}</span><span style="color:var(--muted);font-size:12px">Keine Daten</span></div>`;
+    const w=Math.min(100,Math.max(5,val));
+    return`<div class="ausl-row"><span class="ausl-label">${label}</span><div class="ausl-bar"><div class="ausl-fill" style="width:${w}%;background:${auslBg(val)}">${val}%</div><div class="ausl-target" style="left:90%"></div></div><span class="ausl-val" style="color:${auslColor(val)}">${val}%</span></div>`;
+  }
+
+  const maxKWForAvg=curKW-1;const kwMonth=month;
+  const kMonthKWs=kD.filter(d=>d.month===kwMonth&&d.kw<=maxKWForAvg);
+  const pMonthKWs=pD.filter(d=>d.month===kwMonth&&d.kw<=maxKWForAvg);
+  const kPhysioMonth=kMonthKWs.length?Math.round(kMonthKWs.reduce((s,d)=>s+d.physio,0)/kMonthKWs.length*10)/10:null;
+  const kErgoMonth=kMonthKWs.filter(d=>d.ergo!==null).length?Math.round(kMonthKWs.filter(d=>d.ergo!==null).reduce((s,d)=>s+d.ergo,0)/kMonthKWs.filter(d=>d.ergo!==null).length*10)/10:null;
+  const pPhysioMonth=pMonthKWs.length?Math.round(pMonthKWs.reduce((s,d)=>s+d.physio,0)/pMonthKWs.length*10)/10:null;
+
+  const kYTD=kD.filter(d=>d.kw<=maxKWForAvg);const pYTD=pD.filter(d=>d.kw<=maxKWForAvg);
+  const kPhysioYTD=kYTD.length?Math.round(kYTD.reduce((s,d)=>s+d.physio,0)/kYTD.length*10)/10:null;
+  const kErgoYTD=kYTD.filter(d=>d.ergo!==null).length?Math.round(kYTD.filter(d=>d.ergo!==null).reduce((s,d)=>s+d.ergo,0)/kYTD.filter(d=>d.ergo!==null).length*10)/10:null;
+  const pPhysioYTD=pYTD.length?Math.round(pYTD.reduce((s,d)=>s+d.physio,0)/pYTD.length*10)/10:null;
+
+  let h=`<div class="ausl-card"><h4>KW ${selectedKW} · Aktuell</h4>`;
+  h+=bar('KIMOJO Physio',kwK?kwK.physio:null);h+=bar('KIMOJO Ergo',kwK?kwK.ergo:null);h+=bar('PHFIP Physio',kwP?kwP.physio:null);h+=`</div>`;
+  h+=`<div class="ausl-card"><h4>ø ${kwMonth||'Monat'}</h4>`;
+  h+=bar('KIMOJO Physio',kPhysioMonth);h+=bar('KIMOJO Ergo',kErgoMonth);h+=bar('PHFIP Physio',pPhysioMonth);h+=`</div>`;
+  h+=`<div class="ausl-card"><h4>ø YTD</h4>`;
+  h+=bar('KIMOJO Physio',kPhysioYTD);h+=bar('KIMOJO Ergo',kErgoYTD);h+=bar('PHFIP Physio',pPhysioYTD);h+=`</div>`;
+  const el=document.getElementById('auslDiv');if(el)el.innerHTML=h;
+}
+
+// ═══════════════════════════════════════════════════════════
+// OFFENE REZEPTE (Patientenchecker)
+// ═══════════════════════════════════════════════════════════
+function analyzePatients(rows){
+  const P={};
+  for(const r of rows){if(!r.patient||!r.datum)continue;const k=r.patient+'||'+r.standort;if(!P[k])P[k]={patient:r.patient,therapeut:r.therapeut,standort:r.standort,lastDate:null,treatments:[],openAmount:0,openCount:0,totalCount:0};const p=P[k];p.treatments.push(r);p.totalCount++;if(!r.abgerechnet){p.openCount++;p.openAmount+=r.preis;}if(!p.lastDate||r.datum>p.lastDate){p.lastDate=r.datum;p.therapeut=r.therapeut;}}
+  overduePatients=Object.values(P).filter(p=>p.openCount>0);
+  overduePatients.forEach(p=>p.treatments.sort((a,b)=>b.datum-a.datum));
+}
+
+function renderOffeneRezepte(){
+  const el=document.getElementById('offeneContainer');if(!el)return;
+  let h='';
+  h+=`<div class="flt"><span class="fl">Zeitraum</span><button class="fb ${minWeeks===2?'a':''}" onclick="setWeeks(2,this)">2+ Wochen</button><button class="fb ${minWeeks===4?'a':''}" onclick="setWeeks(4,this)">4+ Wochen</button><button class="fb ${minWeeks===6?'a':''}" onclick="setWeeks(6,this)">6+ Wochen</button><div class="sep"></div><span class="fl">Standort</span><button class="fb ${standortFilter==='all'?'a':''}" data-s="all" onclick="setStandort('all',this)">Alle</button><button class="fb ${standortFilter==='KIMOJO #1'?'a':''}" data-s="KIMOJO #1" onclick="setStandort('KIMOJO #1',this)"><span class="dot" style="background:var(--red)"></span>#1</button><button class="fb ${standortFilter==='KIMOJO #2'?'a':''}" data-s="KIMOJO #2" onclick="setStandort('KIMOJO #2',this)"><span class="dot" style="background:var(--red)"></span>#2</button><button class="fb ${standortFilter==='KIMOJO #3'?'a':''}" data-s="KIMOJO #3" onclick="setStandort('KIMOJO #3',this)"><span class="dot" style="background:var(--red)"></span>#3</button><button class="fb ${standortFilter==='Ergotherapie'?'a':''}" data-s="Ergotherapie" onclick="setStandort('Ergotherapie',this)"><span class="dot" style="background:var(--ergo)"></span>Ergo</button><button class="fb ${standortFilter==='PHFIP'?'a':''}" data-s="PHFIP" onclick="setStandort('PHFIP',this)"><span class="dot" style="background:var(--teal)"></span>PHFIP</button><div class="sep"></div><input type="text" class="search" id="searchInput" placeholder="Patient oder Therapeut..." oninput="renderTable()"></div>`;
+  h+=`<div id="statsDiv" class="hero"></div>`;
+  h+=`<div class="tcx"><div class="thd"><h3>Patienten mit offenen Rezepten</h3><span class="cnt" id="resultCount">0</span></div>`;
+  h+=`<table class="data-t"><thead><tr><th style="width:30px"></th><th data-sort="patient" onclick="sortBy('patient')">Patient <span class="arrow"></span></th><th data-sort="therapeut" onclick="sortBy('therapeut')">Therapeut <span class="arrow"></span></th><th data-sort="standort" onclick="sortBy('standort')">Standort <span class="arrow"></span></th><th class="r" data-sort="lastDate" onclick="sortBy('lastDate')">Letzter Termin <span class="arrow"></span></th><th class="r" data-sort="daysAgo" onclick="sortBy('daysAgo')">Tage her <span class="arrow"></span></th><th class="r" data-sort="openCount" onclick="sortBy('openCount')">Offene Beh. <span class="arrow"></span></th><th class="r" data-sort="openAmount" onclick="sortBy('openAmount')">Betrag <span class="arrow"></span></th><th></th></tr></thead><tbody id="tbody"></tbody></table></div>`;
+  el.innerHTML=h;renderTable();
+}
+
+function renderTable(){
+  const now=new Date(),cutoff=new Date(now.getTime()-minWeeks*7*24*60*60*1000);
+  const searchEl=document.getElementById('searchInput');const search=searchEl?searchEl.value.toLowerCase():'';
+  let F=overduePatients.filter(p=>{if(!p.lastDate||p.lastDate>=cutoff)return false;if(search&&!p.patient.toLowerCase().includes(search)&&!p.therapeut.toLowerCase().includes(search))return false;if(standortFilter!=='all'&&p.standort!==standortFilter)return false;return true;});
+  F.forEach(p=>{p.daysAgo=Math.floor((now-p.lastDate)/(24*60*60*1000));});
+  const{col,asc}=currentSort;
+  F.sort((a,b)=>{let va=a[col],vb=b[col];if(col==='patient'||col==='therapeut'||col==='standort'){va=(va||'').toLowerCase();vb=(vb||'').toLowerCase();}if(col==='lastDate'){va=va?va.getTime():0;vb=vb?vb.getTime():0;}if(va<vb)return asc?-1:1;if(va>vb)return asc?1:-1;return 0;});
+  const tO=F.reduce((s,p)=>s+p.openAmount,0),tB=F.reduce((s,p)=>s+p.openCount,0),urg=F.filter(p=>p.daysAgo>=42).length;
+  const sEl=document.getElementById('statsDiv');if(sEl)sEl.innerHTML=`<div class="hk"><div class="hk-l">Offene Patienten</div><div class="hk-v" style="color:var(--red)">${F.length}</div><div class="hk-sub">mit offenen Rezepten</div></div><div class="hk"><div class="hk-l">Offene Behandlungen</div><div class="hk-v">${tB}</div><div class="hk-sub">nicht abgerechnet</div></div><div class="hk"><div class="hk-l">Offener Betrag</div><div class="hk-v" style="color:var(--red)">${fm(tO)}</div><div class="hk-sub">noch abzurechnen</div></div><div class="hk"><div class="hk-l">Dringend</div><div class="hk-v" style="color:${urg>0?'var(--red)':'var(--teal)'}">${urg}</div><div class="hk-sub">6+ Wochen überfällig</div></div>`;
+  document.querySelectorAll('.tcx thead th').forEach(th=>{const s=th.dataset.sort,ar=th.querySelector('.arrow');if(!ar)return;if(s===col){th.classList.add('sorted');ar.textContent=asc?'▲':'▼';}else{th.classList.remove('sorted');ar.textContent='';}});
+  const cEl=document.getElementById('resultCount');if(cEl)cEl.textContent=F.length+' Patienten';
+  const tb=document.getElementById('tbody');if(!tb)return;tb.innerHTML='';
+  F.forEach((p,i)=>{const bg=p.daysAgo>=42?'b-red':p.daysAgo>=28?'b-amber':'b-teal',bt=p.daysAgo>=42?'Dringend':p.daysAgo>=28?'Überfällig':'Prüfen',st=statusMap[p.patient]||'',fd=p.lastDate?`${p.lastDate.getDate()}.${p.lastDate.getMonth()+1}.${p.lastDate.getFullYear()}`:'–',sCls=sC(p.standort);
+    const tr=document.createElement('tr');tr.className=p.daysAgo>=42?'urgent':'';
+    tr.innerHTML=`<td><button class="expand-btn" onclick="toggleDetail(${i},this)">▶</button></td><td><div class="pn">${esc(p.patient)}</div></td><td><div>${esc(pName(p.therapeut))}</div></td><td><span class="standort ${sCls}">${esc(p.standort)}</span></td><td class="r">${fd}</td><td class="r"><span class="days">${p.daysAgo}</span> <span class="badge ${bg}">${bt}</span></td><td class="r"><strong>${p.openCount}</strong><span style="color:var(--muted);font-size:10px"> / ${p.totalCount}</span></td><td class="r"><strong>${fm(p.openAmount)}</strong></td><td><button class="act ${st==='kontaktiert'?'done':''}" onclick="setStatus('${escA(p.patient)}','kontaktiert')">📞</button><button class="act ${st==='erledigt'?'done':''}" onclick="setStatus('${escA(p.patient)}','erledigt')">✅</button></td>`;
+    tb.appendChild(tr);
+    const dr=document.createElement('tr');dr.className='detail-row';dr.id='detail-'+i;let dh='<td colspan="9"><div class="detail-content"><strong>Offene Behandlungen:</strong><table class="dtable"><thead><tr><th>Datum</th><th>Uhrzeit</th><th>Leistung</th><th style="text-align:right">Betrag</th></tr></thead><tbody>';
+    p.treatments.filter(t=>!t.abgerechnet).forEach(t=>{const d=t.datum?`${t.datum.getDate()}.${t.datum.getMonth()+1}.${t.datum.getFullYear()}`:'–';dh+=`<tr><td>${d}</td><td>${esc(t.uhrzeit)}</td><td>${esc(t.leistung)}</td><td style="text-align:right">${fm(t.preis)}</td></tr>`;});
+    dh+='</tbody></table></div></td>';dr.innerHTML=dh;tb.appendChild(dr);
+  });
+}
+
+function sortBy(c){if(currentSort.col===c)currentSort.asc=!currentSort.asc;else{currentSort.col=c;currentSort.asc=c==='patient'||c==='therapeut';}renderTable();}
+function setWeeks(w,el){minWeeks=w;document.querySelectorAll('#offeneContainer .flt .fb').forEach(p=>{if(!p.dataset.s)p.classList.remove('a')});el.classList.add('a');renderTable();}
+function setStandort(s,el){standortFilter=s;document.querySelectorAll('#offeneContainer .flt .fb[data-s]').forEach(p=>p.classList.remove('a'));el.classList.add('a');renderTable();}
+function toggleDetail(i,b){document.getElementById('detail-'+i).classList.toggle('open');b.classList.toggle('open');}
+function setStatus(p,s){if(statusMap[p]===s)delete statusMap[p];else statusMap[p]=s;localStorage.setItem('rezeptStatus',JSON.stringify(statusMap));renderTable();}
+
+// ═══════════════════════════════════════════════════════════
+// WARTELISTE (Patientenchecker)
+// ═══════════════════════════════════════════════════════════
+async function loadWL(){
+  try{
+    const did=drives.kimojo;if(!did)return;
+    let data=null;
+    try{data=await getSheet(did,WL_FILE.id,WL_FILE.sheet);}catch(e){
+      const url=`https://graph.microsoft.com/v1.0/drives/${did}/items/${WL_FILE.id}/workbook/worksheets('${encodeURIComponent(WL_FILE.sheet)}')/range(address='A1:N1')`;
+      await gqlPatch(url,{values:[WL_HEADERS]});data=await getSheet(did,WL_FILE.id,WL_FILE.sheet);
+    }
+    if(!data||data.length<1){wlData=[];return;}
+    if(data[0]&&data[0][0]!=='Patient'){const url=`https://graph.microsoft.com/v1.0/drives/${did}/items/${WL_FILE.id}/workbook/worksheets('${encodeURIComponent(WL_FILE.sheet)}')/range(address='A1:N1')`;await gqlPatch(url,{values:[WL_HEADERS]});}
+    wlData=[];
+    for(let i=1;i<data.length;i++){const r=data[i];if(!r||!r[0])continue;wlData.push({row:i+1,patient:String(r[0]||''),telefon:String(r[1]||''),therapeut:String(r[2]||''),standort:String(r[3]||''),prio:String(r[4]||'Normal'),kategorie:String(r[5]||'Manuell'),zeitwunsch:String(r[6]||'Flexibel'),notiz:String(r[7]||''),status:String(r[8]||'Neu'),leistung:String(r[9]||''),letzterTermin:String(r[10]||''),tageHer:String(r[11]||''),erstelltAm:String(r[12]||''),erstelltVon:String(r[13]||'')});}
+  }catch(e){console.warn('WL load:',e);}
+}
+
+async function writeWLRow(rowIdx,values){
+  const did=drives.kimojo;if(!did)return;
+  const url=`https://graph.microsoft.com/v1.0/drives/${did}/items/${WL_FILE.id}/workbook/worksheets('${encodeURIComponent(WL_FILE.sheet)}')/range(address='A${rowIdx}:N${rowIdx}')`;
+  await gqlPatch(url,{values:[values]});
+}
+async function appendWLRow(values){const nextRow=wlData.length+2;await writeWLRow(nextRow,values);}
+
+async function autoDetectWLPatients(allRows){
+  const now=new Date(),cutoff=new Date(now.getTime()-21*24*60*60*1000);
+  const patients={};
+  for(const r of allRows){if(!r.patient||!r.datum||r.abgerechnet)continue;if(/Hausbesuch|Ausfallrechnung|PhFiP.?Club|FBE/i.test(r.leistung))continue;const k=r.patient;if(!patients[k])patients[k]={patient:r.patient,therapeut:r.therapeut,standort:r.standort,lastDate:null,leistung:r.leistung};if(!patients[k].lastDate||r.datum>patients[k].lastDate){patients[k].lastDate=r.datum;patients[k].therapeut=r.therapeut;patients[k].leistung=r.leistung;patients[k].standort=r.standort;}}
+  const existing=new Set(wlData.map(w=>w.patient.toLowerCase()));
+  const autoPatients=Object.values(patients).filter(p=>p.lastDate&&p.lastDate<cutoff&&!existing.has(p.patient.toLowerCase()));
+  if(!autoPatients.length)return;
+  const user='🤖 System';const nowStr=new Date().toLocaleDateString('de-DE');
+  const did=drives.kimojo;if(!did)return;
+  let nextRow=wlData.length+2;
+  for(const p of autoPatients.slice(0,50)){const daysAgo=Math.floor((now-p.lastDate)/(864e5));const fd=p.lastDate.toLocaleDateString('de-DE');const values=[p.patient,'',pName(p.therapeut),p.standort,'Normal','Auto-Erkannt','Flexibel',`Seit ${daysAgo} Tagen kein Termin`,'Neu',p.leistung,fd,String(daysAgo),nowStr,user];try{await writeWLRow(nextRow,values);nextRow++;}catch(e){console.warn('Auto-write:',e);}}
+  await loadWL();
+}
+
+function toggleWLForm(){const w=document.getElementById('wlFormWrap'),b=document.getElementById('wlFormToggle');if(w.style.display==='none'){w.style.display='block';b.textContent='Schließen';}else{w.style.display='none';b.textContent='Formular öffnen';}}
+
+async function addWLEntry(){
+  const name=document.getElementById('wlName').value.trim();if(!name){alert('Patient Name ist Pflicht');return;}
+  const now=new Date().toLocaleDateString('de-DE');const user=ma.getActiveAccount()?.name||'Unbekannt';
+  const values=[name,document.getElementById('wlPhone').value.trim(),document.getElementById('wlTherapeut').value.trim(),document.getElementById('wlStandort').value,document.getElementById('wlPrio').value,document.getElementById('wlKat').value,document.getElementById('wlZeit').value,document.getElementById('wlNote').value.trim(),'Neu','','','',now,user];
+  const nextRow=wlData.length+2;
+  wlData.push({row:nextRow,patient:values[0],telefon:values[1],therapeut:values[2],standort:values[3],prio:values[4],kategorie:values[5],zeitwunsch:values[6],notiz:values[7],status:'Neu',leistung:'',letzterTermin:'',tageHer:'',erstelltAm:now,erstelltVon:user});
+  ['wlName','wlPhone','wlTherapeut','wlNote'].forEach(id=>document.getElementById(id).value='');
+  renderWL();
+  try{await appendWLRow(values);}catch(e){console.warn('WL write:',e);}
+}
+
+async function updateWLStatus(rowIdx,newStatus){
+  const entry=wlData.find(w=>w.row===rowIdx);if(entry)entry.status=newStatus;
+  renderWL();
+  const did=drives.kimojo;if(!did)return;
+  const url=`https://graph.microsoft.com/v1.0/drives/${did}/items/${WL_FILE.id}/workbook/worksheets('${encodeURIComponent(WL_FILE.sheet)}')/range(address='I${rowIdx}')`;
+  try{await gqlPatch(url,{values:[[newStatus]]});}catch(e){console.warn('Status update:',e);}
+}
+async function deleteWLRow(rowIdx){const entry=wlData.find(w=>w.row===rowIdx);if(entry)entry.status='Erledigt';renderWL();await updateWLStatus(rowIdx,'Erledigt');}
+
+function setWLView(v,el){wlView=v;document.querySelectorAll('#wlContainer .fb[data-wv]').forEach(b=>b.classList.remove('a'));el.classList.add('a');renderWL();}
+function setWLStatus(s,el){wlStatusFilter=s;document.querySelectorAll('#wlContainer .fb[data-ws]').forEach(b=>b.classList.remove('a'));el.classList.add('a');renderWL();}
+
+function renderWL(){
+  const container=document.getElementById('wlContainer');if(!container)return;
+  let F=wlData.filter(w=>w.status!=='Erledigt');
+  if(wlView!=='all')F=F.filter(w=>wlView==='KIMOJO'?w.standort.startsWith('KIMOJO')||w.standort==='Ergotherapie':w.standort==='PHFIP');
+  if(wlStatusFilter!=='all')F=F.filter(w=>w.status===wlStatusFilter);
+  const searchEl=document.getElementById('wlSearch');const search=searchEl?searchEl.value:'';
+  if(search)F=F.filter(w=>w.patient.toLowerCase().includes(search.toLowerCase())||w.therapeut.toLowerCase().includes(search.toLowerCase()));
+  const priOrd={Dringend:0,Normal:1,Niedrig:2};F.sort((a,b)=>(priOrd[a.prio]||1)-(priOrd[b.prio]||1)||parseInt(b.tageHer||0)-parseInt(a.tageHer||0));
+  const allActive=wlData.filter(w=>w.status!=='Erledigt');
+  const viewActive=wlView==='all'?allActive:allActive.filter(w=>wlView==='KIMOJO'?w.standort.startsWith('KIMOJO')||w.standort==='Ergotherapie':w.standort==='PHFIP');
+  const neu=viewActive.filter(w=>w.status==='Neu').length;const kontaktiert=viewActive.filter(w=>w.status==='Kontaktiert').length;const eingeplant=viewActive.filter(w=>w.status==='Eingeplant').length;const auto=viewActive.filter(w=>w.kategorie==='Auto-Erkannt').length;
+
+  let h='';
+  h+=`<div class="hero">`;
+  h+=`<div class="hk"><div class="hk-l">Wartend</div><div class="hk-v" style="color:var(--red)">${neu}</div><div class="hk-sub">🆕 Neue Einträge</div></div>`;
+  h+=`<div class="hk"><div class="hk-l">Kontaktiert</div><div class="hk-v" style="color:var(--amber)">${kontaktiert}</div><div class="hk-sub">📞 In Bearbeitung</div></div>`;
+  h+=`<div class="hk"><div class="hk-l">Eingeplant</div><div class="hk-v" style="color:var(--teal)">${eingeplant}</div><div class="hk-sub">📅 Termin steht</div></div>`;
+  h+=`<div class="hk"><div class="hk-l">Auto-Erkannt</div><div class="hk-v" style="color:var(--blue)">${auto}</div><div class="hk-sub">🤖 Systemvorschlag</div></div>`;
+  h+=`</div>`;
+  h+=`<div class="flt"><span class="fl">Ansicht</span><button class="fb ${wlView==='all'?'a':''}" data-wv="all" onclick="setWLView('all',this)">Alle</button><button class="fb ${wlView==='KIMOJO'?'a':''}" data-wv="KIMOJO" onclick="setWLView('KIMOJO',this)"><span class="dot" style="background:var(--red)"></span>KIMOJO</button><button class="fb ${wlView==='PHFIP'?'a':''}" data-wv="PHFIP" onclick="setWLView('PHFIP',this)"><span class="dot" style="background:var(--teal)"></span>PHFIP</button><div class="sep"></div><span class="fl">Status</span><button class="fb ${wlStatusFilter==='all'?'a':''}" data-ws="all" onclick="setWLStatus('all',this)">Alle</button><button class="fb ${wlStatusFilter==='Neu'?'a':''}" data-ws="Neu" onclick="setWLStatus('Neu',this)">🆕 Neu</button><button class="fb ${wlStatusFilter==='Kontaktiert'?'a':''}" data-ws="Kontaktiert" onclick="setWLStatus('Kontaktiert',this)">📞 Kontaktiert</button><button class="fb ${wlStatusFilter==='Eingeplant'?'a':''}" data-ws="Eingeplant" onclick="setWLStatus('Eingeplant',this)">📅 Eingeplant</button><div class="sep"></div><input type="text" class="search" id="wlSearch" value="${esc(search)}" placeholder="Patient suchen..." oninput="renderWL()"></div>`;
+  h+=`<div class="wl-card"><div class="thd"><h4>➕ Neuer Eintrag</h4><button class="wl-add" onclick="toggleWLForm()" id="wlFormToggle">Formular öffnen</button></div><div id="wlFormWrap" style="display:none;margin-top:12px"><div class="wl-form"><input class="wl-input" id="wlName" placeholder="Patient Name *"><input class="wl-input" id="wlPhone" placeholder="Telefon"><input class="wl-input" id="wlTherapeut" placeholder="Therapeut"><select class="wl-select" id="wlStandort"><option>KIMOJO #1</option><option>KIMOJO #2</option><option>KIMOJO #3</option><option>Ergotherapie</option><option>PHFIP</option></select><select class="wl-select" id="wlPrio"><option>Dringend</option><option selected>Normal</option><option>Niedrig</option></select><select class="wl-select" id="wlKat"><option>Manuell</option><option>Folgerezept</option><option>Terminwunsch</option></select><select class="wl-select" id="wlZeit"><option>Flexibel</option><option>Vormittag</option><option>Nachmittag</option></select><input class="wl-input" id="wlNote" placeholder="Notiz..."><button class="wl-add" onclick="addWLEntry()">+ Speichern</button></div></div></div>`;
+
+  if(!F.length){h+='<div class="tcx"><div class="wl-empty">Keine Einträge'+(wlStatusFilter!=='all'?' mit diesem Status':'')+'</div></div>';container.innerHTML=h;return;}
+  h+=`<div class="tcx"><div class="thd"><h3>Warteliste</h3><span class="cnt">${F.length} Patienten</span></div><table class="data-t"><thead><tr><th>Patient</th><th>Telefon</th><th>Therapeut</th><th>Standort</th><th>Prio</th><th>Zeitwunsch</th><th>Notiz</th><th>Status</th><th class="r">Tage</th><th></th></tr></thead><tbody>`;
+  const priCls=p=>p==='Dringend'?'b-red':p==='Niedrig'?'b-teal':'b-amber';
+  F.forEach(w=>{const sCls=sC(w.standort);const isAuto=w.kategorie==='Auto-Erkannt';const rowBg=isAuto?' style="background:var(--blue-bg)"':'';
+    const statusBtns=`<button class="act ${w.status==='Neu'?'done':''}" onclick="updateWLStatus(${w.row},'Neu')" title="Neu">🆕</button><button class="act ${w.status==='Kontaktiert'?'done':''}" onclick="updateWLStatus(${w.row},'Kontaktiert')" title="Kontaktiert">📞</button><button class="act ${w.status==='Eingeplant'?'done':''}" onclick="updateWLStatus(${w.row},'Eingeplant')" title="Eingeplant">📅</button><button class="act" onclick="deleteWLRow(${w.row})" title="Erledigt">✅</button>`;
+    h+=`<tr${rowBg}><td><div class="pn">${esc(w.patient)}</div>${w.leistung?`<div class="th-sub">${esc(w.leistung)}</div>`:''}</td><td>${w.telefon?`<a href="tel:${esc(w.telefon)}" style="color:var(--red);font-weight:600">${esc(w.telefon)}</a>`:'—'}</td><td>${esc(w.therapeut)}</td><td><span class="standort ${sCls}">${esc(w.standort)}</span></td><td><span class="badge ${priCls(w.prio)}">${esc(w.prio)}</span></td><td style="font-size:10px">${esc(w.zeitwunsch)}</td><td style="font-size:10px;max-width:140px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${esc(w.notiz)}">${esc(w.notiz)}</td><td>${statusBtns}</td><td class="r">${w.tageHer?`<span class="days">${esc(w.tageHer)}</span>`:''}</td></tr>`;
+  });
+  h+=`</tbody></table></div>`;
+  container.innerHTML=h;
+}
+</script>
+</body>
+</html>

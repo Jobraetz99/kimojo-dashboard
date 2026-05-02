@@ -93,10 +93,12 @@ const MC={auth:{clientId:"9fe9cda7-79c3-4d06-82dc-372715bb8086",authority:"https
 const LR={scopes:["Files.Read","Files.ReadWrite","Sites.Read.All"]};
 const ma=new msal.PublicClientApplication(MC);
 const isMobile=/Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
+// Verwende Redirect statt Popup wenn: Mobile ODER Seite ist in einem (verschachtelten) Popup-Fenster
+const useRedirect=isMobile||(window.opener!==null)||(window.self!==window.top);
 
-async function signIn(){try{document.getElementById('er').style.display='none';if(isMobile){await ma.loginRedirect(LR);}else{const r=await ma.loginPopup(LR);ma.setActiveAccount(r.account);await loadAll();}}catch(e){document.getElementById('er').textContent=e.message;document.getElementById('er').style.display='block';}}
-function signOut(){if(isMobile){ma.logoutRedirect();}else{ma.logoutPopup();}document.getElementById('db').style.display='none';document.getElementById('lo').style.display='flex';}
-async function getToken(){const a=ma.getActiveAccount();try{return(await ma.acquireTokenSilent({...LR,account:a})).accessToken;}catch(e){if(isMobile){await ma.acquireTokenRedirect(LR);return null;}return(await ma.acquireTokenPopup(LR)).accessToken;}}
+async function signIn(){try{document.getElementById('er').style.display='none';if(useRedirect){await ma.loginRedirect(LR);}else{const r=await ma.loginPopup(LR);ma.setActiveAccount(r.account);await loadAll();}}catch(e){document.getElementById('er').textContent=e.message;document.getElementById('er').style.display='block';}}
+function signOut(){if(useRedirect){ma.logoutRedirect();}else{ma.logoutPopup();}document.getElementById('db').style.display='none';document.getElementById('lo').style.display='flex';}
+async function getToken(){const a=ma.getActiveAccount();try{return(await ma.acquireTokenSilent({...LR,account:a})).accessToken;}catch(e){if(useRedirect){await ma.acquireTokenRedirect(LR);return null;}return(await ma.acquireTokenPopup(LR)).accessToken;}}
 ma.initialize().then(async()=>{
   try{const resp=await ma.handleRedirectPromise();if(resp){ma.setActiveAccount(resp.account);await loadAll();return;}}catch(e){}
   const a=ma.getAllAccounts();if(a.length>0){ma.setActiveAccount(a[0]);await loadAll();}

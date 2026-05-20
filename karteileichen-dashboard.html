@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Karteileichen · thevea · KIMOJO</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://alcdn.msauth.net/browser/2.38.0/js/msal-browser.min.js"></script>
+<style>
+:root{--red:#C03B35;--red-bg:rgba(192,59,53,.08);--red-hover:#a3302c;--dark:#020101;--bg:#fdfaf8;--card:#fff;--muted:#777;--border:#eaeaea;--teal:#00bfa6;--amber:#d97706;--blue:#3b82f6;--green:#059669;--radius:18px;--shadow:0 8px 24px rgba(0,0,0,.04)}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Poppins',sans-serif;background:var(--bg);color:var(--dark);line-height:1.55}
+#lo{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:9999}
+.lb{text-align:center;width:400px;max-width:92vw}
+.lb h1{font-family:'Montserrat',sans-serif;font-size:clamp(28px,7vw,38px);font-weight:900;color:var(--red);margin-bottom:4px;letter-spacing:-.03em}
+.lb p{color:var(--muted);font-size:14px;margin-bottom:28px}
+.l-btn{width:100%;padding:15px;border:none;border-radius:100px;background:var(--red);color:#fff;font-family:'Montserrat',sans-serif;font-size:15px;font-weight:700;cursor:pointer;transition:.3s;display:flex;align-items:center;justify-content:center;gap:8px}
+.l-btn:hover{background:var(--red-hover)}
+.l-err{color:var(--red);font-size:13px;margin-top:12px;font-weight:600;display:none}
+#ld{position:fixed;inset:0;background:var(--bg);display:none;flex-direction:column;align-items:center;justify-content:center;z-index:9998}
+.spinner{width:38px;height:38px;border:3px solid var(--border);border-top-color:var(--red);border-radius:50%;animation:spin .8s linear infinite;margin-bottom:12px}
+@keyframes spin{to{transform:rotate(360deg)}}
+#ld p{color:var(--muted);font-size:14px}
+#app{display:none;padding:24px 20px}
+.mx{max-width:1280px;margin:0 auto}
+.hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;flex-wrap:wrap;gap:10px}
+h1.t{font-family:'Montserrat',sans-serif;font-size:24px;font-weight:900;letter-spacing:-.02em}
+h1.t span{color:var(--red)}
+.hbtn{padding:7px 14px;border-radius:100px;border:2px solid var(--border);background:#fff;color:var(--muted);font-size:12px;font-weight:600;cursor:pointer}
+.sub{color:var(--muted);font-size:13px;margin-bottom:18px}
+.flt{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:16px}
+.fl{font-family:'Montserrat',sans-serif;font-size:10px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--muted)}
+.fb{padding:7px 14px;border-radius:100px;border:2px solid var(--border);background:#fff;color:var(--muted);font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;cursor:pointer;transition:.2s}
+.fb:hover{border-color:var(--red);color:var(--red)}
+.fb.a{border-color:var(--red);background:var(--red);color:#fff}
+.sep{width:1px;height:22px;background:var(--border);margin:0 4px}
+.search{padding:8px 14px;border:2px solid var(--border);border-radius:100px;font-family:'Poppins';font-size:12px;outline:none;min-width:200px}
+.search:focus{border-color:var(--red)}
+.hero{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:20px}
+.hk{background:var(--card);border-radius:var(--radius);padding:16px;border:1px solid var(--border);box-shadow:var(--shadow)}
+.hk-l{font-family:'Montserrat',sans-serif;font-size:9px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.hk-v{font-family:'Montserrat',sans-serif;font-size:24px;font-weight:900;line-height:1.1}
+.hk-sub{font-size:10px;color:var(--muted);margin-top:3px}
+.tcx{background:var(--card);border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow);overflow:hidden}
+.thd{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border)}
+.thd h3{font-family:'Montserrat',sans-serif;font-size:15px;font-weight:800}
+.cnt{font-family:'Montserrat',sans-serif;font-size:12px;font-weight:800;color:var(--red);background:var(--red-bg);padding:4px 12px;border-radius:100px}
+table{width:100%;border-collapse:collapse;font-size:12px}
+thead th{text-align:left;padding:10px 12px;font-family:'Montserrat',sans-serif;font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);cursor:pointer;white-space:nowrap;border-bottom:1px solid var(--border)}
+thead th.r{text-align:right}
+thead th:hover{color:var(--red)}
+tbody td{padding:10px 12px;border-bottom:1px solid #f3f3f3;vertical-align:middle}
+tbody tr:hover{background:#fafafa}
+tbody tr.urgent{background:var(--red-bg)}
+td.r{text-align:right;font-feature-settings:'tnum'}
+.pn{font-weight:600}
+.geb{font-size:10px;color:var(--muted)}
+.badge{display:inline-block;padding:2px 9px;border-radius:100px;font-size:9px;font-weight:800;font-family:'Montserrat',sans-serif}
+.b-red{background:var(--red-bg);color:var(--red)}
+.b-amber{background:rgba(217,119,6,.1);color:var(--amber)}
+.b-teal{background:rgba(0,191,166,.1);color:var(--teal)}
+.b-blue{background:rgba(59,130,246,.1);color:var(--blue)}
+.b-green{background:rgba(5,150,105,.1);color:var(--green)}
+.b-gray{background:#f0f0f0;color:var(--muted)}
+.prog{display:flex;align-items:center;gap:8px}
+.bar{width:54px;height:6px;background:#eee;border-radius:6px;overflow:hidden}
+.bar > i{display:block;height:100%;background:var(--teal)}
+.bar > i.full{background:var(--green)}
+.act{border:none;background:#f3f3f3;border-radius:8px;padding:5px 8px;cursor:pointer;font-size:12px;margin-left:3px}
+.act.done{background:var(--green)}
+.empty{padding:50px;text-align:center;color:var(--muted)}
+.banner{background:rgba(217,119,6,.08);border:1px solid rgba(217,119,6,.3);color:var(--amber);border-radius:12px;padding:10px 14px;font-size:12px;margin-bottom:16px}
+.ft{text-align:center;padding:18px;font-size:11px;color:var(--muted);font-family:'Montserrat',sans-serif;font-weight:600}
+@media(max-width:1000px){.hero{grid-template-columns:1fr 1fr 1fr}}
+</style>
+</head>
+<body>
+
+<div id="lo"><div class="lb">
+  <h1>🗂️ Karteileichen</h1>
+  <p>thevea · nicht abgerechnete Verordnungen</p>
+  <button class="l-btn" onclick="signIn()">
+    <svg viewBox="0 0 21 21" width="20" height="20"><rect x="1" y="1" width="9" height="9" fill="#f25022"/><rect x="11" y="1" width="9" height="9" fill="#7fba00"/><rect x="1" y="11" width="9" height="9" fill="#00a4ef"/><rect x="11" y="11" width="9" height="9" fill="#ffb900"/></svg>
+    Mit Microsoft anmelden
+  </button>
+  <div class="l-err" id="er"></div>
+</div></div>
+
+<div id="ld"><div class="spinner"></div><p id="lt">Lade…</p></div>
+
+<div id="app"><div class="mx">
+  <div class="hdr">
+    <h1 class="t">🗂️ <span>Karteileichen</span></h1>
+    <div><button class="hbtn" onclick="reload()">↻ Aktualisieren</button> <button class="hbtn" onclick="signOut()">Abmelden</button></div>
+  </div>
+  <p class="sub">Verordnungen, die behandelt, aber noch nicht abgerechnet sind — direkt aus SharePoint.</p>
+
+  <div class="flt">
+    <span class="fl">Liegt seit</span>
+    <button class="fb" data-w="0" onclick="setWeeks(0,this)">Alle</button>
+    <button class="fb a" data-w="2" onclick="setWeeks(2,this)">2+ Wochen</button>
+    <button class="fb" data-w="4" onclick="setWeeks(4,this)">4+ Wochen</button>
+    <button class="fb" data-w="6" onclick="setWeeks(6,this)">6+ Wochen</button>
+    <div class="sep"></div>
+    <span class="fl">Typ</span>
+    <button class="fb a" data-t="all" onclick="setTyp('all',this)">Alle</button>
+    <button class="fb" data-t="VOLL" onclick="setTyp('VOLL',this)">Voll</button>
+    <button class="fb" data-t="TEIL" onclick="setTyp('TEIL',this)">Teilweise</button>
+    <div class="sep"></div>
+    <span class="fl">Formular</span>
+    <button class="fb a" data-f="all" onclick="setForm('all',this)">Alle</button>
+    <button class="fb" data-f="GKV" onclick="setForm('GKV',this)">GKV</button>
+    <button class="fb" data-f="Privat" onclick="setForm('Privat',this)">Privat</button>
+    <button class="fb" data-f="Blanko" onclick="setForm('Blanko',this)">Blanko</button>
+    <div class="sep"></div>
+    <input type="text" class="search" id="search" placeholder="Patient / Heilmittel..." oninput="render()">
+  </div>
+
+  <div id="banner"></div>
+  <div class="hero" id="stats"></div>
+
+  <div class="tcx">
+    <div class="thd"><h3>Karteileichen</h3><span class="cnt" id="resultCount">0</span></div>
+    <table>
+      <thead><tr>
+        <th data-s="name" onclick="sortBy('name')">Patient</th>
+        <th data-s="heilmittel" onclick="sortBy('heilmittel')">Heilmittel</th>
+        <th data-s="formular" onclick="sortBy('formular')">Formular</th>
+        <th data-s="typ" onclick="sortBy('typ')">Typ</th>
+        <th class="r" data-s="prog" onclick="sortBy('prog')">Fortschritt</th>
+        <th class="r" data-s="last" onclick="sortBy('last')">Letzter Termin</th>
+        <th class="r" data-s="weeks" onclick="sortBy('weeks')">Wochen her</th>
+        <th class="r" data-s="zuzahlung" onclick="sortBy('zuzahlung')">Zuzahlung</th>
+        <th></th>
+      </tr></thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>
+  <div class="ft">thevea · Karteileichen · KIMOJO/Fyzo</div>
+</div></div>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+// CONFIG — bei Bedarf anpassen
+// ═══════════════════════════════════════════════════════════
+// Speicherort: 'onedrive' = persönliches OneDrive for Business, 'sharepoint' = SharePoint-Site
+const STORAGE = 'onedrive';
+const SITE = { host:'kimojophysiotherapie.sharepoint.com', path:'/sites/KIMOJOManagement' }; // nur bei STORAGE='sharepoint'
+const BASE = '/BM Group/12_Code/thevea/Dateien Dashbaord/';   // Ordnerpfad zur Datei
+const VO_FILE = 'Verordnungsübersicht.json';   // Dateiname (ggf. ohne .json anpassen)
+const TERMINE_FILE = '';                         // optional: z.B. 'thevea-termine.json' — leer = ohne Termin-Daten
+
+// Status, die als "erledigt/abgerechnet" gelten (NICHT Karteileiche)
+const DONE_STATUS = ['Versandt','Abgeschlossen'];
+
+// ═══════════════════════════════════════════════════════════
+// MSAL (gleiche Azure-App wie KIMOJO)
+// ═══════════════════════════════════════════════════════════
+const MC = { auth:{ clientId:"9fe9cda7-79c3-4d06-82dc-372715bb8086", authority:"https://login.microsoftonline.com/3e5c8d47-8ccc-42f6-877d-0d0e72972e39", redirectUri:window.location.origin+window.location.pathname }, cache:{ cacheLocation:"sessionStorage" } };
+const LR = { scopes:["Files.Read","Sites.Read.All"] };
+const ma = new msal.PublicClientApplication(MC);
+const isMobile = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
+
+async function signIn(){
+  try{
+    document.getElementById('er').style.display='none';
+    if(isMobile){ await ma.loginRedirect(LR); }
+    else{ const r=await ma.loginPopup(LR); ma.setActiveAccount(r.account); await loadData(); }
+  }catch(e){ const er=document.getElementById('er'); er.textContent=e.message; er.style.display='block'; }
+}
+function signOut(){ if(isMobile){ma.logoutRedirect();}else{ma.logoutPopup();} document.getElementById('app').style.display='none'; document.getElementById('lo').style.display='flex'; }
+async function getToken(){ const a=ma.getActiveAccount(); try{ return (await ma.acquireTokenSilent({...LR,account:a})).accessToken; }catch(e){ if(isMobile){ await ma.acquireTokenRedirect(LR); return null; } return (await ma.acquireTokenPopup(LR)).accessToken; } }
+ma.initialize().then(async()=>{
+  try{ const resp=await ma.handleRedirectPromise(); if(resp){ ma.setActiveAccount(resp.account); await loadData(); return; } }catch(e){}
+  const a=ma.getAllAccounts(); if(a.length>0){ ma.setActiveAccount(a[0]); await loadData(); }
+});
+
+// ═══════════════════════════════════════════════════════════
+// GRAPH (SharePoint-Datei lesen)
+// ═══════════════════════════════════════════════════════════
+let driveRoot=null;
+const gql = u => fetch(u,{headers:{Authorization:'Bearer '+window._token}}).then(r=>r.ok?r.json():null);
+async function resolveDriveRoot(){
+  if(STORAGE==='sharepoint'){
+    const site=await gql(`https://graph.microsoft.com/v1.0/sites/${SITE.host}:${SITE.path}`); if(!site)return null;
+    const d=await gql(`https://graph.microsoft.com/v1.0/sites/${site.id}/drive`); return d?`https://graph.microsoft.com/v1.0/drives/${d.id}`:null;
+  }
+  return 'https://graph.microsoft.com/v1.0/me/drive';
+}
+async function loadJSON(filename){ const f=BASE+filename; const e=f.split('/').filter(s=>s).map(s=>encodeURIComponent(s)).join('/'); const r=await fetch(driveRoot+'/root:/'+e+':/content',{headers:{Authorization:'Bearer '+window._token}}); if(!r.ok)return null; return JSON.parse((await r.text()).replace(/^\uFEFF/,'')); }
+
+// ═══════════════════════════════════════════════════════════
+// DATEN LADEN
+// ═══════════════════════════════════════════════════════════
+let VO=[], TERM=null;
+function showLoad(t){ document.getElementById('lo').style.display='none'; document.getElementById('app').style.display='none'; const l=document.getElementById('ld'); l.style.display='flex'; document.getElementById('lt').textContent=t; }
+async function loadData(){
+  try{
+    showLoad('Anmeldung…');
+    window._token = await getToken();
+    if(!window._token) return; // Redirect läuft (mobil)
+    showLoad('Verbinde Speicher…');
+    driveRoot = await resolveDriveRoot();
+    if(!driveRoot){ alert('Speicherort nicht gefunden — bitte CONFIG (STORAGE / SITE) prüfen.'); return; }
+    showLoad('Lade Verordnungen…');
+    const voJson = await loadJSON(VO_FILE);
+    if(!voJson){ alert('Datei nicht gefunden: '+BASE+VO_FILE+'\n\nBitte CONFIG (BASE / VO_FILE) prüfen.'); return; }
+    VO = extractVO(voJson);
+    TERM = null;
+    if(TERMINE_FILE){ try{ const t=await loadJSON(TERMINE_FILE); if(t) TERM=extractTerm(t); }catch(e){} }
+    document.getElementById('ld').style.display='none';
+    document.getElementById('app').style.display='block';
+    render();
+  }catch(e){ document.getElementById('ld').style.display='none'; alert('Fehler beim Laden: '+e.message); }
+}
+function reload(){ loadData(); }
+
+// ═══════════════════════════════════════════════════════════
+// PARSER
+// ═══════════════════════════════════════════════════════════
+function extractVO(j){
+  const nodes = j?.data?.verordnungUebersicht?.nodes || j?.verordnungUebersicht?.nodes || j?.nodes || (Array.isArray(j)?j:[]);
+  return nodes.map(n=>({
+    id:n.id, name:(n.nachname||'')+', '+(n.vorname||''), geb:n.geburtsdatum||null,
+    formular:n.formular||'—', status:n.status||'—', heilmittel:n.heilmittel||'—',
+    durchf:n.summeDurchfuehrbareBehandlungen||0, durchg:n.summeDurchgefuehrteBehandlungen||0,
+    ausstellung:n.ausstellungsdatum||null, zuzahlung:(typeof n.zuzahlung==='number'?n.zuzahlung:0)
+  }));
+}
+function extractTerm(j){
+  const t = j?.daten?.termine || j?.data?.termine || j?.termine || [];
+  const now=new Date(); now.setHours(0,0,0,0); const map={};
+  t.forEach(x=>{ if(x.__typename!=='PatientenTermin')return; const vid=x.verordnungConnection?.verordnungId; if(!vid)return;
+    const d=new Date(x.from), st=x.status; if(!map[vid])map[vid]={last:null,future:0,stattgef:0}; const m=map[vid];
+    if(st==='STATTGEFUNDEN'){ m.stattgef++; if(!m.last||d>m.last)m.last=d; }
+    else if(d<now && st!=='ABGESAGT'){ if(!m.last||d>m.last)m.last=d; }
+    if(d>=now && st!=='ABGESAGT') m.future++; });
+  return map;
+}
+
+// ═══════════════════════════════════════════════════════════
+// KLASSIFIZIERUNG (Karteileiche)
+// ═══════════════════════════════════════════════════════════
+function classify(){
+  const rows=[];
+  VO.forEach(v=>{
+    if(DONE_STATUS.includes(v.status)) return;
+    const ti=(TERM && TERM[v.id]) || {last:null,future:0,stattgef:0};
+    const erbracht=Math.max(v.durchg, ti.stattgef);
+    const voll = v.durchf>0 && erbracht>=v.durchf;
+    const teil = !voll && erbracht>=1 && (!TERM || ti.future===0);
+    if(!voll && !teil) return;
+    let basis=ti.last, approx=false;
+    if(!basis && v.ausstellung){ basis=new Date(v.ausstellung); approx=true; }
+    let weeks=null; if(basis){ const now=new Date(); now.setHours(0,0,0,0); weeks=Math.floor((now-basis)/(7*864e5)); }
+    rows.push({ ...v, typ:voll?'VOLL':'TEIL', erbracht, last:ti.last, future:ti.future, basisDate:basis, weeks, approx });
+  });
+  return rows;
+}
+
+// ═══════════════════════════════════════════════════════════
+// FILTER / RENDER
+// ═══════════════════════════════════════════════════════════
+let weeksFilter=2, typFilter='all', formFilter='all';
+let sort={col:'weeks',asc:false};
+let statusMap=JSON.parse(localStorage.getItem('kl_status')||'{}');
+function setWeeks(w,el){ weeksFilter=w; mark(el,'data-w'); render(); }
+function setTyp(t,el){ typFilter=t; mark(el,'data-t'); render(); }
+function setForm(f,el){ formFilter=f; mark(el,'data-f'); render(); }
+function mark(el,attr){ el.parentNode.querySelectorAll('['+attr+']').forEach(b=>b.classList.remove('a')); el.classList.add('a'); }
+function sortBy(c){ if(sort.col===c) sort.asc=!sort.asc; else { sort.col=c; sort.asc=(c==='name'||c==='heilmittel'||c==='formular'); } render(); }
+function setStatus(id,s){ if(statusMap[id]===s) delete statusMap[id]; else statusMap[id]=s; localStorage.setItem('kl_status',JSON.stringify(statusMap)); render(); }
+function fmt(d){ return d ? String(d.getDate()).padStart(2,'0')+'.'+String(d.getMonth()+1).padStart(2,'0')+'.'+d.getFullYear() : '–'; }
+function eur(n){ return n ? n.toLocaleString('de-DE',{minimumFractionDigits:2,maximumFractionDigits:2})+' €' : '–'; }
+function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+function render(){
+  let rows=classify();
+  const q=document.getElementById('search').value.toLowerCase();
+  rows=rows.filter(r=>{
+    if(typFilter!=='all' && r.typ!==typFilter) return false;
+    if(formFilter!=='all' && r.formular!==formFilter) return false;
+    if(weeksFilter>0){ if(r.weeks==null || r.weeks<weeksFilter) return false; }
+    if(q && !r.name.toLowerCase().includes(q) && !r.heilmittel.toLowerCase().includes(q)) return false;
+    return true;
+  });
+  rows.sort((a,b)=>{ let va,vb; switch(sort.col){
+    case 'name': va=a.name.toLowerCase(); vb=b.name.toLowerCase(); break;
+    case 'heilmittel': va=a.heilmittel.toLowerCase(); vb=b.heilmittel.toLowerCase(); break;
+    case 'formular': va=a.formular; vb=b.formular; break;
+    case 'typ': va=a.typ; vb=b.typ; break;
+    case 'prog': va=a.durchf?a.erbracht/a.durchf:0; vb=b.durchf?b.erbracht/b.durchf:0; break;
+    case 'last': va=a.basisDate?a.basisDate.getTime():0; vb=b.basisDate?b.basisDate.getTime():0; break;
+    case 'zuzahlung': va=a.zuzahlung; vb=b.zuzahlung; break;
+    default: va=a.weeks??-1; vb=b.weeks??-1; }
+    if(va<vb)return sort.asc?-1:1; if(va>vb)return sort.asc?1:-1; return 0; });
+
+  document.getElementById('banner').innerHTML = TERM ? '' :
+    '<div class="banner">ℹ️ Kein Termin-Export geladen — „Wochen her" basiert auf dem Ausstellungsdatum (~). Für „letzter Termin" und Zukunftstermin-Prüfung zusätzlich eine Termin-Datei in der CONFIG (TERMINE_FILE) angeben.</div>';
+
+  const voll=rows.filter(r=>r.typ==='VOLL').length, teil=rows.filter(r=>r.typ==='TEIL').length;
+  const sumZ=rows.reduce((s,r)=>s+r.zuzahlung,0), dringend=rows.filter(r=>r.weeks!=null && r.weeks>=6).length;
+  document.getElementById('stats').innerHTML =
+    `<div class="hk"><div class="hk-l">Karteileichen</div><div class="hk-v" style="color:var(--red)">${rows.length}</div><div class="hk-sub">nicht abgerechnet</div></div>`+
+    `<div class="hk"><div class="hk-l">Voll behandelt</div><div class="hk-v" style="color:var(--green)">${voll}</div><div class="hk-sub">fertig im Kasten</div></div>`+
+    `<div class="hk"><div class="hk-l">Teilweise</div><div class="hk-v" style="color:var(--amber)">${teil}</div><div class="hk-sub">liegengeblieben</div></div>`+
+    `<div class="hk"><div class="hk-l">Zuzahlung offen</div><div class="hk-v">${eur(sumZ)}</div><div class="hk-sub">Patienten-Anteil</div></div>`+
+    `<div class="hk"><div class="hk-l">Dringend</div><div class="hk-v" style="color:${dringend?'var(--red)':'var(--teal)'}">${dringend}</div><div class="hk-sub">6+ Wochen</div></div>`;
+  document.getElementById('resultCount').textContent=rows.length+' Verordnungen';
+  document.querySelectorAll('thead th').forEach(th=>{ const s=th.dataset.s; if(!s)return; th.style.color=s===sort.col?'var(--red)':''; });
+
+  const tb=document.getElementById('tbody');
+  if(!rows.length){ tb.innerHTML='<tr><td colspan="9"><div class="empty">Keine Karteileichen mit diesen Filtern 🎉</div></td></tr>'; return; }
+  tb.innerHTML=rows.map(r=>{
+    const pct=r.durchf?Math.min(100,Math.round(r.erbracht/r.durchf*100)):0; const full=r.typ==='VOLL';
+    const wk=r.weeks==null?'?':(r.approx?'~':'')+r.weeks;
+    const wkBadge=r.weeks==null?'b-gray':r.weeks>=6?'b-red':r.weeks>=4?'b-amber':'b-teal';
+    const st=statusMap[r.id]||''; const urgent=r.weeks!=null&&r.weeks>=6;
+    const geb=r.geb?new Date(r.geb).toLocaleDateString('de-DE'):'';
+    return `<tr class="${urgent?'urgent':''}">
+      <td><div class="pn">${esc(r.name)}</div>${geb?`<div class="geb">${geb}</div>`:''}</td>
+      <td>${esc(r.heilmittel.length>40?r.heilmittel.slice(0,40)+'…':r.heilmittel)}</td>
+      <td><span class="badge b-blue">${esc(r.formular)}</span></td>
+      <td><span class="badge ${full?'b-green':'b-amber'}">${full?'Voll':'Teilweise'}</span></td>
+      <td class="r"><div class="prog" style="justify-content:flex-end"><span>${r.erbracht}/${r.durchf}</span><div class="bar"><i class="${full?'full':''}" style="width:${pct}%"></i></div></div></td>
+      <td class="r">${fmt(r.basisDate)}${r.approx?' ~':''}</td>
+      <td class="r"><span class="badge ${wkBadge}">${wk}</span></td>
+      <td class="r">${eur(r.zuzahlung)}</td>
+      <td class="r" style="white-space:nowrap"><button class="act ${st==='kontaktiert'?'done':''}" title="Kontaktiert" onclick="setStatus(${r.id},'kontaktiert')">📞</button><button class="act ${st==='erledigt'?'done':''}" title="Erledigt" onclick="setStatus(${r.id},'erledigt')">✅</button></td>
+    </tr>`;
+  }).join('');
+}
+</script>
+</body>
+</html>
